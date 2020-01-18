@@ -1,0 +1,739 @@
+---
+title: "Comandos básicos de Python"
+author: "Fellipe Gomes"
+date: "10 de dezembro de 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+geometry: margin=lin
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Por que Python?
+
+Python e R são as duas linguagens de programação mais utilizadas pelos cientistas de dados. Basta navegar pelas soluções de machine learning do [Kaggle](https://www.kaggle.com/) (Um playgroud para nós) que iremos notar que essas linguagens de programação são utilizadas de forma massiva nas análises.
+
+Todo bom programador entende que programar **NÃO** é a mesma coisa que decorar. Uma linguagem de programação tem vários comandos e ninguém precisa decorar todos eles. Certamente nós iremos memorizar muitos comandos de cabeça mas isso é possível apenas depois de praticar, praticar, praticar... (e praticar mais um pouquinho...)
+
+A linguagem Python é muito interessante por sua simplicidade e objetividade, é uma linguagem fácil de aprender, muito poderosa e possui uma comunidade muito grande. É livre e inúmeras pessoas contribuem para a linguagem (inclusive você também pode contribuir).
+
+Como o estudo de uma linguagem de programação envolve muita consulta nos materiais e comandos básicos, resolvi unir neste post uma especie de "manual" para usuários iniciantes que volta e meia precisam tirar uma dúvida ou curiosidade (diga-se de passagem, a dúvida e curiosidade são as melhores amigas de um cientista de dados!)
+
+# Instalação
+
+Para instalar o Python no windowns, basta aessar o [site oficial](www.python.org) e baixar a versão mais recente ([python-3.6.3](https://www.python.org/ftp/python/3.6.3/python-3.6.3.exe)) e seguir com o instalador.
+
+Após isso , precisamos de algum Ambiente Integrado de Desenvolvimento (IDE, do inglês "Integrated Development Environment"), pois a linguagem python por si só não oferece editores de código ou ambientes de programação.
+
+Existem diversos ambientes como o [PyCharm](https://www.jetbrains.com/pycharm/),  o [Rodeo](https://github.com/yhat/rodeo) (esse parece mais com o [RStudio](https://www.rstudio.com/)). Até mesmo o próprio [RStudio](https://www.rstudio.com/) pode compilar a linguagem Python através de [pacotes](https://cran.r-project.org/web/packages/reticulate/index.html) ou pelo [Rmarkdown](rmarkdown.rstudio.com/). 
+
+Pretendo abordar melhor este assunto de compilar Python dentro do R em um próximo post. 
+
+Um dos IDEs mais utilizados por diversas razões é o [Jupyter](https://jupyter.org/) que pode ser instalado diretamente do link do download. O jupyter irá pedir para que [Anaconda](https://www.anaconda.com/download/) seja instalado neste mesmo link basta seguir as instruções e estaremos prontos para rodar todos os comandos de python s seguir!
+
+# Variáveis
+
+Em python tudo é tratado como objeto, até funções são objetos. A seguir podemos conferir quais os tipos de variáveis podem ser encontradas.
+
+## Tipos básicos:
+
+* Tipos Integrais:
+    * Inteiro: (**int**)
+    * Lógico (ou Booleano): (**bool**)
+* Tipos de Ponto-Flutuante
+    * Número de ponto-flutuante: (**float**)
+    * Número Complexo: (**complex**)
+* String (**str**)
+
+## Conversão de Tipos:
+
+* `int()`: para inteiro
+* `float()`: para ponto flutuante
+* `bool()`: para booleano
+* `str()`: para string
+
+## Operadores únicos:
+
+* `+`: Operador numérico positivo
+* `-`: Operador numérico negativo
+* `not`: Operador lógico de negação
+
+## Operadores Binários Aritméticos:
+
+* `+`: Soma
+* `-`: Subtração
+* `\`* : Produto
+* `/`: Divisão de ponto flutuante
+* `//`: Divisão inteira
+* `%`: Resto da divisão inteira
+* `\*\`*: Potencialização
+
+## Operadores Binários Lógicos:
+
+* `or`: Disjunção lógica ou soma lógica
+* `and`: Conjunção lógica ou produto lógico 
+
+## Operadores Binários Relacionais:
+
+* `==`: Igual a
+* `!=`: Diferente de
+* `>`: Maior que
+* `<`: Menor que
+* `>=`: Maior ou igual
+* `<=`: Menor ou igual 
+
+# Comandos básicos
+
+## Estrutura de Seleção com dois ramos `if-else`
+
+A estrutura de dois ramos `if-else` é utilizada quando deseja-se executar uma entre duas suites, dependendo de como foi avaliada a condição (como **True** ou **False**).
+
+Exemplo de uso:
+
+```{python}
+x=10
+if x>0:
+  print(x, "e maior do que zero.")
+else:
+  print(x, "e menor ou igual a zero.")
+```
+
+## Estrutura de Seleção com Múltiplos Ramos `if-elif` ou `if-elif-else`
+
+As estruturas de seleção `if-elif` e `if-elif-else`* tem uso quando deseja-se executar uma entre várias suites, dependendo do resultado da condição avaliada.
+
+veja o exemplo a seguir com uso do `if-elif-else` :
+
+```{python}
+#Valors que serão utilizados n programa:
+valores = [5,9]     #Poderiamos pedir que o usuario informasse como exemplo:
+#valores=input("Digite dois valores: ").split()
+
+x = int(valores[0]) #Primeiro valor
+y = int(valores[1]) #Segundo valor
+op = "+"            #Operação a ser executada
+
+#Calculadora:
+if op=="+":
+  resultado = x+y
+elif op=="-":
+  resultado = x-y
+elif op=="*":
+  resultado = x*y
+elif op=="/":
+  resultado = x/y
+elif op=="**":
+  resultado = x**y
+else:
+  resultado = None
+if resultado == None:
+  print(op, "Operador inexistente!!")
+else:
+  print(x,op,y,"=",resultado)
+```
+
+## Estruturas de Repetição Indefinida `while`:
+
+A estrutura de repetição indefinida **while** deve ser utilizada quando se deseja executar zero ou mais vezes uma suite enquanto a condição estipulada for verdadeira.
+
+Exemplo de uso:
+
+```{python}
+i=1
+while i<=10:
+  print(i, end=" ")
+  i=i+1
+print()
+```
+
+## Estruturas de Repetição Definida `for`:
+
+A estrutura de repetição definida **for* deve ser utilizada quando se deseja, um determinado número de vezes, executar uma mesma suite, enumerado ou nao por uma lista de valores.
+
+Exemplo de uso:
+
+```{python, eval=F}
+for i in [2,3,4,5,6,7,8,9]:
+  print(i, end=" ")
+print()
+```
+
+Obs.: Para a estrutura de repetição definida com `for`, podemos utilizar o comando `range()`, que fornece uma lista com P.A. de itens de razão determinada (razão 1 como default), iniciada pelo valor zero (ou um valor previamente definido) e termina no valor que antecede o limite, exemplo:
+
+```{python,eval=F}
+print(range(7))       #[0,1,2,3,4,5,6]
+print(range(7,20))    #[7,8,9,10,11,12,13,14,15,16,17,18,19]
+print(range(10,50,5)) #[10,15,20,25,30,35,40,45]
+```
+
+# Estrutura de Dados
+
+## Vetor
+
+Um vetor é um **agregado** de elementos (também chamados de valores) de um **mesmo** tipo.
+
+Imagine um vetor, do qual para a seleção de elementos dentro desse vetor, podemos utilizar um índice ou seletor do elemento que indica sua posição ou ordem.
+
+```{python, eval=F}
+vetor=[4,3,2,1]
+
+print(vetor[0])
+print(vetor[3])
+```
+
+* Caracteristicas:
+    * É uma estrutura **homogênea**
+    * Todos os elementos da estrutura são igualmente acessíveis
+    * Cada elementro da estrutura tem um nome próprio
+    
+Um vetor pode ser simples ou estruturado
+
+* A leitura de um vetor pode ser realizada:
+    * Elemento a elemento
+    * Todas as informações podem ser lidas de uma vez, como uma linha de caracteres, sobre o qual se aplica a operação `split()` para separá-las
+    
+* A escrita de um vetor pode ser realizada;
+    * Toda de uma vez
+    * Elemento a elemento
+    
+## Matriz
+
+A matriz 2D é um vetor de vetores, vejamos um exemplo de uma matrix e como acessar seus elementos:
+
+```{python}
+aposta =  [[" ","X"," "],
+          [" "," ","X"],
+          [" ","X"," "],
+          ["X"," "," "],
+          [" ","X"," "],
+          [" "," ","X"],
+          [" ","X"," "]]
+          
+print(aposta)       #Representa uma matriz de 7 linhas por 3 colunas
+print(aposta[0])    #Representa a primeira linha da matriz
+print(aposta[0][1]) #Representa o caractere da primeira linha da segunda coluna
+```    
+
+### Entrada dinâmica de vetores e matrizes
+
+Em python, vetores e matrizes são implementados por listas, uma forma alteranativa é utilizando a operação que *anexa um valor ao final de uma lista*: `append()`
+
+## String (Cadeia de Caracteres)
+
+Um objeto do tipo **str** representa uma cadeia de caracteres, de tamnho e valor imutáveis, veja um exemplo de declaração e atribuição:
+
+```{python, eval=F}
+nome = "Ana"
+print(len(nome)) # confima o comprimento ou quantidade de caracteres na string
+```
+
+* Comparação de Strings
+    * comparação lexicografica de strings com os operadores ==,!=, <=, >=, <, >
+    
+* Indexação de cada caractere
+    * O tipo de String pode ser tratado tambem como vetor, vejamos:
+    
+```{python}
+#Se:
+nome = "Ana"
+#Então:
+print(nome[0])
+print(nome[1])
+print(nome[2])
+```
+
+* O operador **+**, quando aplicado a dois Strings *a* e *b* retorna uma String concatenada das Strings *a* e *b*
+
+
+* Método **find(**_subStringProcurada_**)**
+    * Retorna a posição do indice da primeira ocorrencia da subStringProcurada na String sendo consultada. Caso nao seja encontrada, retorna menor um (-1)
+
+* Outros métodos **importantes**:
+    * `replace(subStringProcurada, subStringNova)`
+        * Retorna uma copia da string sendo consultada, substituindo
+    * `count(subStringProcurada)`
+        * Retorna a quantidade de ocorrencias
+    * `upper()`
+        * Retorna uma cópia da String, convertendo tudo para maiúsculo
+    * `lower()`
+        * retorna uma cópia da String, convertendo tudo para minusculo
+    * `strip()`
+        * Retorna uma cópia da String, removendo todos caracteres brancos do início e do final
+    * `split()`
+        * Retorna uma lista de todas as palavras String
+    * `split(subStringSeparadora)`
+        * Retorna uma lista de todas as palavras String, sendo o delimitador procurado entre palavras aquele especificado em subStringSeparadora.
+
+* Metodos para leitura e escrita:
+    * `input()`, `readline`, `print`, `write`
+
+## Tupla
+
+Uma sequência ordenada de zero ou mais referências a objetos. Tuplas suportam o mesmo fatiamento, o mesmo acesso por iteradores e o mesmo desempacotamento que Vetores e Strings. São imutáveis e pode ser vazia.
+
+Exemplo:
+
+```{python}
+vazio = tuple()
+print(vazio)
+```
+
+Mais exemplos, agora de tuplas não vazias:
+
+```{python}
+val = ("abacaxi", 500, 4.99)
+print(val)
+#ou ainda:
+val = "abacaxi", 500, 4.99
+print(val)
+```
+
+### Métodos disponíveis sobre Tuplas
+
+* `count(valor)`
+    * Retorna a quantidade de ocorrencias de um determinado valor da tupla, exemplo:
+    
+```{python}
+v = ("morango", 500, 4.99, 500)
+print(v.count(500))           #Retorna quantidade
+```
+
+* `index(valor)`
+    * Retorna o índice da primeira ocorrência do valor informado como argumento, exemplo:
+    
+```{python}
+v = ("morango", 500, 4.99, 500)
+print(v.index(500))            #Retorna indice
+```
+
+### Operações sobre Tuplas
+
+* **concatenação:** _a+b_
+    * Gera uma nova tupla a partir do conteúdo de a seguido de b
+* **replicação:** _a*n_
+    * Gera uma nova Tupla a partir do conteúdo de (a) repetida n-1 vezes
+* **fatiamento:** a[_posição inicial : posição final+1_]
+    * Gera uma nova Tupla a partir do subconjunto de elementos contidos em a
+* **atribuição incremental:** _a +=b_ ou _a*=n_
+    * Equivalente a concatenação e repetição, porém atribui à variável (a) a referência para a nova tupla gerada
+* **comparação:** _< , <+ , == , !=, >, >=_
+    * Compara item a item
+* **associação:** _in_ e _not in_
+    * Verifica a pertinência de um valor em uma tupla
+
+## Lista
+
+Uma lista é uma sequencia ordenada pelo índice, de zero ou mais referências a objetos.
+
+  Características:
+    * É uma estrutura de dado recursiva
+        * Representada por uma sequência, fechada por colchetes ( **[** e **]**)
+        * O primeiro elemento esta na posição zero
+    * Lista são mutáveis, podem receber novos elementos, substituir ou remover antigos elementos
+
+### Operações sobre listas:
+
+  * Operações de **inclusão** de novos elementos:
+      * `apend(novoElemento)`: anexa um *novoElemento no final* da lista
+      * `insert(pos,novoElemento)`: insere o *novoElemento* na posição *pos* da lista, caso essa posição não exista, será criada
+
+Exemplo:
+
+```{python}
+#Incluindo valores:
+salada = ["manda", "pera", "uva"]
+print(salada)
+salada.append("banana") 
+print(salada)
+salada.insert(2,"goiaba")
+print(salada)
+```
+
+ * Operações de **exclusão**: de novos elementos:
+      * **pop(**  **)**: retorna e remove o último elemento da lista.
+      * **pop(** *pos* **)**: retorna e remove o elemento na posição *pos* da lista.
+      * **remove(** *x* **)**: remove a primeira ocorrência do item *x*.
+      
+ * Outras operações úteis com listas:
+      * **les(**  **)**: retorna o comprimento da lista.
+      * lista.**count(** *elemento* **)**: retorna quantas vezes o *elemento* aparece na lista
+      * lista.**sort(** *lista* **)**: ordena o conteúdo da *lista*
+
+### Fatiamento de Listas
+
+  * Fatiamento de Listas:
+      * *listaAntiga*[*posInicio* : *posFim* *]*: retorna uma nova lista composta de referências para elementos existentes na listAntiga
+
+Exemplo:
+
+```{python}
+saladaComposta = ["banana", "caju", "uva", "pera", "manga", "kiwi"]
+print(saladaComposta)
+saladaSimples = saladaComposta[1:4]
+print(saladaSimples)
+```
+
+## Listas de listas
+
+Os indices fazem referências a novas listas contidas no seu interior
+
+Veja um exemplo:
+
+```{python}
+mercado = [["pera", 100, 4.9], ["manga", 20, 3.9], ["uva", 30,5.9], ["caju", 15.35]]
+print(mercado)
+```
+
+### Operando elementos de uma lista de listas
+
+Confira:
+
+```{python}
+#Seja a seguinte lista de listas:
+mercado = [["pera", 100, 4.9], ["manga", 20, 3.9], ["uva", 30,5.9], ["caju", 15.35]]
+
+print(mercado)
+
+mercado[1][2] *= 0.5  #Manga pela metade do preço
+print(mercado)
+
+mercado[3][1] -= 10  #caju com dez quilos a menos
+print(mercado)
+
+mercado.remove(["uva", 30,5.9])  #O produto uva é removido do mercado
+print(mercado)
+
+mercado.insert(1, ["kiwi", 200, 1.99])  #O produto kiwi é inserido
+print(mercado)
+```
+
+## Conjunto (set)
+
+É uma estrutura de dados mutável, desordenada e sem elementos repetidos. Seu uso se dá quando existe a necessidade de testar a pertinência de um elemento em um conjunto ou eliminar dados duplicados.
+
+Conjuntos suportam as operações matemáticas: união, interseção, diferença etc..
+
+Diferentemente dos vetores, conjuntos não têm seus elementos acesados por um índice, no entanto são conjuntos iteráveis, podendo seus elementos serem acessador por uma estrutura **for**.
+
+Exemplo de conjunto:
+
+```{python}
+base = set()
+print(base)
+```
+
+### Operações sob conjuntos
+
+* `.add()` 
+    * Adiciona um elemento ao conjunto, caso o elemento ainda não esteja presente
+
+```{python}
+base = set()
+base.add(5)
+print(base)
+```
+    
+* `.discard()`
+    * retira um elemento do conjunto, caso o elemento esteja nele
+    
+```{python}
+base = {52,8,91,47}
+base.discard(91)
+print(base)
+```    
+    
+* `len()` 
+    * retorna a cardinalidade do conjunto (seu tamanho)
+
+```{python}
+base = {52,8,91,47}
+print(len(base))
+```
+
+### Operações para conjuntos
+
+* `a.union(b)` ou `a|b`
+    * retorna um novo conjunto resultante da união de *a* e *b*
+    
+```{python}
+# Exemplos de uniao
+a={1,3,4}.union({1,2,4})
+print(a)
+a={1,3,4}|{1,2,4}
+print(a)
+```
+
+* `a.intersection(b)` ou `a&b`
+    * retorna um novo conjunto resultante da interseção de *a* e *b*
+
+```{python}
+# Exemplo de interceção
+a={1,3,4}.intersection({1,2,4})
+print(a)
+a={1,3,4}&{1,2,4}
+print(a)
+```
+
+* `a.difference(b)` ou `a-b`
+    * retorna um novo conjunto resultante da diferença entre *a* e *b*, com todos elementos de *a* que não estão em *b*
+    
+    
+```{python}
+# Exemplo de diferença
+a={1,3,4}.difference({1,2,4})
+print(a)
+a={1,3,4}-{1,2,4}
+print(a)
+```
+
+### Operações Relacionais para conjuntos
+
+* Igual `==` e Diferente `!=`
+    * é verdeiro se *a* contém os mesmo elementos que *b*
+    
+```{python}
+a={1,3}=={1,3}
+b={1,3}!={1,3}
+print(a,"\n",b)
+```
+
+* Contém `>=` ou `issubset`
+    * `a<=b` é `True` todo elemento *a* está em *b*
+* Está contido `<=` ou `issuperset`
+    * `a>=b` é `True` todo elemento *b* está em *a*    
+    * `a<=b` é `True` todo elemento *a* está em *b*
+    
+* Pertinência `in`
+    * *a* in *b* é verdadeiro caso *a* seja um elemento de *b*
+    
+## Dicionário
+
+Uma variável pode ser um dicionário contendo chave de tipo imutável (como número inteiros e de ponto flutuante, Strings, Tuplas ou qualquer tipo de valor).
+
+Dicionários têm pares, compostos por **chave:valor**, iteráveis sobre a **chave**, podendo seus elementos serem acessados por uma estrutura **for**.
+
+```{python}
+pares=dict()  #ou
+pares={}
+print(pares)
+```
+
+Para adicionar um novo par ao dicionário, por exemplo um par número:string, basta atribuir o valor ao nome do dicionário seguido pela chave entre colchetes, caso já exista o valor será atualizado. exemplo:
+
+```{python}
+pares={}
+pares[7]="Valor que eu quero"
+print(pares)
+```
+
+Criando um dicionário diretamente
+
+Veja:
+
+```{python}
+pares={"Maria":3468-4618, "Ana Maria": 4674-4318, "José":1346-4133}
+print(pares)
+```
+
+### Operações sob dicionários
+
+Para visualização dos dados contidos no dicionário, podemos utilizar:
+
+  * **d.items()**:retorna uma visualização de todos os pares (chave,valor) de um dicionário **d**
+  * **d.keys()**: retorna uma visualização de todas as chaves de um dicionário **d**
+  * **d.values()**: retorna uma visualizacao de todos os valores de um dicionário **d**
+
+Para manipular os dados contidos em um dicionário, podemos utilizar:
+
+A função `del` nomeDict[**chave**] retira o par **chave:valor** do dicionário. Caso a chave não esteja no dicionário um erro ocorre, veja:
+
+```{python,eval=F}
+pares={5="Boa ideia",7="Valor que eu quero", 31="mes sim mes nao"}
+pares.pop(7)  
+print(pares)
+```
+
+A função `len()` retorna o tamanho do dicionário, veja:
+
+```{python,eval=F}
+pares={5="Boa ideia", 7="valor que eu quero", 31="mes sim mes nao"}
+print(len(pares))
+```
+
+### Consultando dicionários
+
+A função **get(chave)** retorna **None** se não existir aquela **chave** no dicionário, caso contrário retorna o respectivo **valor**, veja:
+
+```{python,eval=F}
+pares={}
+print(pares.get(4)) #retorna None
+```
+
+```{python,eval=F}
+pares = {5="Boa", 7="Meu", 3="Mal"}
+print(pares.get(7)) #Escreve: Meu
+```
+
+A função `get(chave,default)` retorna **default** se não existir aquela **chave** no dicionário, caso contrário retorna o respectivo **valor**
+
+```{python,eval=F}
+pares = {5="Boa", 7="Meu", 3="Mal"}
+print(pares.get(2,"Vazia")) #Escreve: vazia
+print(pares.get(5,"Vazia")) #escreve: Boa
+```
+
+# Funções
+
+São suites, comandos e/ou estruturas de controle, ao qual atribuímos um nome e após a sua execução obtemos um valor.
+
+A utilização de funções permite que o programa possa ser desenvolvido e testado separadamente, além de permitir a reutilização de algumas partes em diferentes pontos do programa.
+
+Sendo assim, é possível montar programas mais complexos a partir de funções menores já desenvolvidas e testadas.
+
+## Declaração de uma função em Python
+
+A função deve ser declarada da seguinte forma:
+
+```{python, eval=F}
+def nomeEscolhido(_lista_)
+  suite do corpo da funcao
+  return None
+```
+
+onde:
+
+  * a _lista_ de parâmetros pode ter zero ou mais parâmetros separados por vírgulas
+  * A _suite do corpo da função_ deve possuir zero ou mais retornos de valores, expressos por **return** _valor apropriado_ (caso nenhum valor seja retornado, **return None**)
+  
+## Parâmetros de uma função em python
+
+Caso uma função possa ser aplicada a diferentes valores de entrada, esta função deve conter parâmetros em sua definição.
+
+Caso não se saiba ao certo número de parâmetros que podem ser espeficicados na entrada da função, podemos utilizar o comando `*arg`, veja:
+
+```{python}
+def soma(*args):
+  return sum(*args)
+
+print(soma([1,2,3])) 
+print(soma([1,2,3,7,8,9,10]))
+print(soma(range(9))) 
+```
+
+  
+## Recursividade
+
+Chama-se de função recursiva quando a função possui no seu corpo uma chamada a ela própria
+
+Exemplo, no cálculo de fatorial:
+
+```{python, eval=F}
+def fat(n):
+  if n==0:
+    return 1
+  else:
+    return n*fat(n-1)     #Aqui esta a chamada recursiva
+```
+
+# Arquivos
+
+Programas interativos sao diferentes de manusear arquivos. Arquivos podem ser de diversas fontes, veremos aqui como trabalhar com os arquivos de texto
+
+Arquivos texto são sequencias de caracteres organizadas em linhas 
+
+## Método `open("arquivo","r")` (read)
+
+Em python, a leitura de arquivos é feito da seguinte maneira:
+
+```{python,,eval=F}
+dados = open(caminho do arquivo, "r") #r: leitura ;
+                                      #w: apenas escrita;
+                                      #a: escreve no final do arquivo
+dados.close()                         # o arquivo nao sera mais utilizado
+```
+
+### Comando readline()
+
+Aplicada sob um arquivo txt aberto, retorna uma linha completa, incluind o final da linha (*\n* que pula a linha). Portando o inicio do leitor avança para a proxima linha, veja:
+
+```{python, eval=F}
+dados = open("dataset.txt", "r")
+linha = dados.readline()
+print(linha, end="")
+dados.close()
+```
+
+### Comando readlines()
+
+Funciona apenas para pequenos arquivos, veja:
+
+```{python, eval=F}
+dados_abrir = "dataset.txt"
+dados=open(dados_abrir, "r")
+
+linhas = dados.readlines()
+for linha in linhas:
+  print(linha, end="")
+  
+dados.close()
+```
+
+### Comando read()
+
+Serve para abrir o arquivo inteiro, veja:
+
+```{python, eval=F}
+dados_abrir = "dataset.txt"
+dados=open(dados_abrir, "r")
+
+print(dados.read())
+```
+
+## Método `open("arquivo","w")` "write"
+
+O comando a seguir irá abrir um arquivo chamado "teste.txt" com o comando `open("nome do arquivo", "w")` (caso não exista um arquivo com esse nome no diretório, será criado) e o arquivo está preparado para a escrita, veja:
+
+```{python, eval=F}
+dados=open("teste.txt", "w")
+dados.write("qualquercoisa")
+```
+
+### Com quebra de linha:
+
+A seguir vamos criar um programa iterativo que pede para que o usuário informe o nome do arquivo que será criado, a quantidade de linha e em seguida ele poderá incluir no arquivo as informaçõe sdesejadas, veja:
+
+```{python, eval=F}
+arquivo = input("Digite o nome do arquivo que sera criado:")
+qnt_linhas = int(input("Quantas linhas:"))
+dados = open(arquivo, "w")
+
+for i in range(qnt_linhas):
+  nova=input("linha"+str(i+1)+":")
+  dados.write(nova+"\n")
+  
+dados.close()
+```
+
+## Método `open("arquivo","a")` "append"
+
+Este método possibilita que o arquivo já existente receba no seu final novas informações, preservando seu conteúdo. Caso o arquivo não exista ele será criado e se o método for usado posteriormente de novo, este mesmo arquivo receberá mais informação.
+
+Veja um exemplo de programa iterativo onde o usuário informa o nome do arquivo que ele deseja anexar novas linhas e depois o método é utilizado:
+
+```{python, eval=F}
+nome=input("Diga o nome do arquivo que deseja anexar")
+arquivo=open(nome, "a")
+noma_linha = input("Diga a nova linha:")
+arquivo.write(nova_linha + "\n")
+arquivo.close()
+```
+
+# Muito o que fazer!
+
+Bom, é isso! Esta página não tem o intuito de servir como uma espécie de "curso" de Python, até porque aprender uma nova linguagem de programação não é uma tarefa trivial.
+
+Esse post é fruto de meus estudos e espero que seja útil como material de consulta para tirar dúvidas daqueles que, como eu, estão buscando aprender mais a cada dia!

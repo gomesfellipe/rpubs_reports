@@ -1,0 +1,629 @@
+---
+title: "Estudo de Análise de Séries Temporais"
+author: "Fellipe Gomes"
+date: "6 de dezembro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Séries Temporais
+
+**Def**.: *Uma série temporal é qualquer conjunto de observações ordenadas no tempo* 
+
+Retirada do livro [Análise de Séries temporais - Pedro A. Morettin e Clélia M. C. Toloi](https://impa.br/wp-content/uploads/2017/04/13_CBM_81_01.pdf)) e em geral, os dados podem ser de:
+
+  * Curtíssimo prazo (1min, 10min,...,1dia)
+  * Curto prazo (1dia, 1 semana)
+  * Médio prazo (dados mensais)
+  * Longo prazo (dados anuais ou mais)
+
+Os objetivos da análise de séries temporais:
+
+  * Investigar o mecanismo gerador da série temporal
+  * Fazer previsões de valores futuros da série (podem ser a curto prazo ou a longo prazo)
+  * Descrever apenas o comportamento da série, neste caso a contrução do gráfico, a verificação da existência de tendências, ciclos e variações sazonais, a construção de histogramas e diagramas de dispersão etc podem ser ferramentas úteis
+  * Procurar periodicidade relevante nos dados
+  
+Em todos os casos, *modelos probabilísticos* ou *modelos estocásticos* são construídos, no domínio temporal ou de frequências.
+
+Etimologicamente (*prae* e *videre*), a palavra previsão sugere que se quer ver uma coisa antes que ela exista. Alguns autores prefiram a palavra *predição*, para indicar algo que deverá existir no futuro. Ainda outros utilizam o temrpo *projeção*. 
+
+Nos nossos exemplos usaremos o seguinte banco de dados (nativo do R):
+
+```{r,warning=F}
+#Pacote que será utilizado:
+suppressMessages(library(forecast))
+AirPassengers
+plot(AirPassengers)
+```
+
+# Processos Estocásticos
+
+É uma família de variáveis aleatórias, que supomos definidas num mesmo espaço de probabilidades. 
+
+São conjunto de variáveis aleatórias medidas ao longo do tempo
+
+Séries temporais podem ser definidas como *uma realização de um processo estocástico*
+
+## Estacionariedade
+
+Intuitivamente, um processo $Z$ é estacionário se ele desenvolve no tempo de modo que a escolha de uma origem dos tempos não é importante. 
+
+Em outras palavras, as características de $Z(t+\tau)$, para todo $\tau$, são as mesmas de $Z(t)$.
+
+Tecnicamente, existem duas formas de estacionariedade:
+
+* fraca (ou ampla, ou de segunda ordem)
+* estrita (ou forte)
+
+Uma série é dita estacionária quando ela se desenvolve no tempo aleatoriamente ao redor de uma média constante e variância constante, refletindo alguma forma de equilíbrio estável.
+
+É uma das suposições mais frequêntes que se faz a respeito de uma série temporal e por este motivo na maioria, será necessário transformar os dados originais caso estes não formem uma série estacionária.
+
+### Ruído branco ($\epsilon_t$)
+
+O ruído branco é um processo estocástico no qual $RB \sim id(0,\sigma_{\epsilon_t}^2)$
+
+### Obtendo a estacionariedade fazendo diferenças
+
+A transformação mais comum para se a série se torne estacionária consiste em tomar **diferenças** sucessivas da série original, até se obter uma série estacionária. De modo geral:
+
+$$
+\Delta^nZt(t)=\Delta[\Delta^{n-1}Z(t)].
+$$
+
+```{r}
+# Diferenciar a série para tirar a tendência
+diff(AirPassengers)
+plot(diff(AirPassengers))
+```
+
+# Elementos da decomposição de uma Série Temporal
+
+Consideramos as observações ${Z_t,t = 1,...,N}$ de uma série temporal, um modelo de decomposição consiste em escrever $Z_t$ como uma soma de três componentes não-observáveis,
+
+$$
+Z_t=T+S+R
+$$
+onde:
+
+  * $T$ : Tendência
+  * $S$ : Sazonalidade (repetição de um fenômeno no período de tempo)
+  * $R$ : Aleatória (espera-se que seja um $RB$)
+  
+Para decomposição de séries temporais no R:
+
+```{r}
+decompose=decompose(AirPassengers)
+plot(decompose)
+```
+
+  
+Com isso somos capazes de criar modelos que possam acompanhar o comportamento da série para gerar boas previsões.
+
+## Tendências 
+
+Inicialmente vamos supor que a componente sazonal $S_t$ não esteja presente.
+
+Há vários métodos para estimar $T_t$, exemplos:
+
+  * ajustar uma função do tempo, como um polinômio, uma exponencial ouuma função suave de $t$;
+  * suavizar (ou filtrar) os valores da série ao redor de um ponto, para estimar a tendência naquele ponto
+  * suavizar os valores da série através de sucessivos ajustes de retas de mínimos quadrados ponderados ("lowess")
+
+### Testes para tendência
+
+Sejam as hipóteses:
+
+$$
+H_0: \text{não existe tendência} \\
+H_1: \text{existe tendência}
+$$
+
+Para avaliar estar hipóteses temos uma série de testes disponíveis, veja:
+
+- Teste de sequências (Wald-Wolfowitz)
+
+```{r}
+randtests::runs.test(AirPassengers)
+```
+
+- Teste do sinal (Cox-Stuart)
+
+- Teste baseado no coeficiente de correlação de Spearman
+
+## Sazonalidade
+
+É dificíl definir tanto do ponto de vista conceitual como estatístico o que seja sazonalidade.
+
+Empiricamente, consideramos como sazonais os fenômenos que ocorrem regularmente de ano para ano.
+
+### Testes para a sazonalidade
+
+- Não paramétricos
+
+    - Kruskall-Wallis
+    - Friedman
+    
+- Paramétricos
+
+    - Anova
+
+# Classes de modelos para séries temporais
+
+Os modelos utilizados para descrever séries temporais são processos estocásticos, isto é, processos controlados por leis probabilísticas.
+
+Algumas das Classes:
+
+  * Modelos de Amortecimento Exponencial (têm obtidos bons resultados na graduação)
+  * Modelos ARIMA (também conta com bons resultados a nível de graduação)
+  * Modelos GARCH
+  * Modelos FUZZY
+  * Modelos de Redes Neurais
+  * Modelos SSA
+
+Qualquer que seja a classificação do modelo de séries temporais, podemos considerar um número muito grande de modelos diferentes para descrever o comportamento de uma série particular.
+
+
+
+## Modelos de Amortecimento Exponencial
+
+A idéia de se usar algum tipo de suavização (ou amortecimento) é que a tendência num instante $t$ será estimada usando-se observações $Z_s$, com $s$ ao redor de $t$, por exemplo, usamos as observações $Z_{t-n},Z_{t-n+1},...,Z_{t+n}$ para estimar $T_t$.
+
+Modelo geral:
+
+$$
+Z_t=\mu(t)+\epsilon_t
+$$
+onde:
+
+  * $\mu(t)$: nível
+  * $\epsilon_t$: erro (deseja-se \sim $RB(0,\sigma^2_{\epsilon_t}))$
+  
+Equação de previsão:
+
+$$
+\hat Z_t(h)= \hat a_1(t)
+$$
+  
+### NAIVE
+
+Leva em consideração que a previsão de hoje é a mesma de ontem. Porém verificar só a última observação pode nao ser interessante.
+
+No R:
+
+```{r}
+naive=naive(AirPassengers)
+plot(naive)
+```
+
+Levando a sazonalidade em consideração:
+
+```{r}
+snaive=snaive(AirPassengers)
+plot(snaive)
+```
+
+### Médias móveis MM(N)
+
+O estimador de $a_1$ é a média das últimas $N$ observações.
+
+Note que se utilizamos $N=1$ voltamos ao método NAIVE e se utilizamos $N=T$ utilizando todas as observações, é tido como um método conservador.
+
+No R:
+
+```{r}
+#Ajustando o modelo:
+mm_centrada_ordem6<- ma(AirPassengers,order=6)
+mm_centrada_ordem12<- ma(AirPassengers,order=12)
+#Nota:  order é tamanho da janela (argumento obrigatório) 
+
+#Plot do modelo:
+plot(AirPassengers)
+lines(mm_centrada_ordem6,col="red",lty=5,lwd =2)
+lines(mm_centrada_ordem12,col="blue",lty=1,lwd =3)
+legend('topleft', legend=c("AirPassengers", "mm centrada com passo 6", "mm centrada com passo 12"),
+bty = "n",col=c("black","red", "blue"), lty=c(1,5,1), cex=0.8,
+lwd =c(1,2,3))
+```
+
+A escolha de $N$ deve ser feita tal que a $SQE$ seja minimizada, onde:
+
+* $SQE$: Soma dos Quadrados dos erros de previsão
+
+que é uma das ferramentas para minimizar os erros e encontrar o menor valor de $N$.
+
+### Amortecimento Exponencial simples
+
+Este método dá pesos maiores às observações mais recentes captando melhor as mudanças
+de comportamento. A previsão desse modelo é igual ao último valor exponencial suavizado
+obtido.
+
+Assumindo $\alpha$ como contante de amortecimento, $\alpha=\frac{1}{N};\alpha \in (0,1)$, dessa forma:
+
+$$
+M_T=\alpha Z_T + (1-\alpha)M_{T-1}
+$$
+
+onde:
+
+  * $Z_t$ é o valor observado da série temporal $Z$ no tempo $t$;
+  * $\hat Z_t$ é o valor exponencialmente suavizado no tempo $t$;
+  * $\alpha$ é a constante de suavização.
+
+No R o ajuste pode ser feito da seguinte maneira:
+
+```{r}
+amortecimento_exponencial_simples<-HoltWinters(AirPassengers, beta=FALSE, gamma=FALSE)
+plot(amortecimento_exponencial_simples)
+```
+
+
+Com a função `forecast()` podemos obter as previsões do modelo de amortecimento exponencial simples com os seus respectivos intervalos de confiançaa. Vamos plotar a série original com a previsão
+para o próximo ano:
+
+```{r}
+previsao<-forecast(amortecimento_exponencial_simples,h=10)
+plot(previsao)
+```
+
+
+### "Lowess"
+
+A sigla "lowess" significa "locally weighted regression scatter plot smoothing". Isto significa que a suavização é feita através de sucessivos ajustes de retas de mínimos quadrados ponderados a sub-conjuntos de dados
+
+```{r}
+lowess=lowess(AirPassengers)
+plot(AirPassengers)
+lines(lowess, col="red")
+legend('topleft', legend=c("AirPassengers", "lowess"),
+bty = "n",col=c("black","red"), lty=c(1,5,1), cex=0.8)
+
+```
+
+
+## Método de Amortecimento exponencial de Holt (dados com tendência)
+
+O método de amortecimento exponencial simples quando aplicado a uma série que apresenta tendência linear positiva (ou negativa) fornece previsões que subestimam (ou superestimam) continuamente os valores reais.
+
+Para evitar esse erro sistemático, um dos métodos é aplicar o amortecimento exponencial de Holt. Esse método é similar, em princípio, ao amortecimento exponencial simples, a diferença é que em vez de suavizar só o nível, ele utiliza uma nova constante de suavização para "modelar" a tendência da série.
+
+O modelo de tendência linear:
+
+
+$$
+Z_T=a_1 + a_2 t + \epsilon_t 
+$$
+no qual $\epsilon_t \sim RB(0,\sigma^2_{\epsilon_t})$ , $a_1$: nível e $a_2$: tendência
+
+e a equação de atualização do parâmetro é dada da seguinte forma:
+
+$$
+\hat a_1(t)= \alpha Z_t + (1- \alpha) [\hat a_1(t-1)=\hat a_2(t-1) ] \\
+\hat a_2(t)= \beta [ \hat a_1(t)-\hat a_1(t-1)]+(1-\beta) \hat a_2 (t-1)
+$$
+
+onde:
+
+  * $\alpha$: constante de amortecimento do nível e $0< \alpha <1$
+  * $beta$: constante de amortecimento da tendência e $0< \beta <1$
+  
+No R:
+
+```{r}
+ajuste_com_tendencia<-HoltWinters(AirPassengers, gamma=FALSE)
+plot(ajuste_com_tendencia)
+```
+
+### Damped Trend
+
+É a tendência "amortecida", "regulada", pode ser obtido com a inclusão de um hieprparâmetro $0<\phi<1$, veja:
+
+$$
+Z_T=a_1 + a_2 t + \big[\sum^h_{i=1} \phi^i \big]
+$$
+Portanto, aqui teremos o uso de 3 hiperparâmetros e 2 parâmetros
+
+No R:
+
+```{r}
+ajuste_com_damped<-hw(AirPassengers,gamma=NULL,damped = T)
+plot(ajuste_com_damped)
+```
+
+# Modelagem In-Sample e Out-Sample
+
+Como comparamos os ajustes para saber se a previsão foi boa?
+
+Podemos separar uma parte da amostra para treino (dentro da amostra) e outra parte da amostra para teste (fora da amostra), com isso teremos a série observada e a série ajustada.
+
+O modelo aprende a acompanhar o comportamento da série e depois deixa executar sozinho.
+
+# Estatísticas de Aderência
+
+Avalia o poder preditivo ou a acurácia do modelo, temos as seguintes estatísticas:
+
+* MAD (Mean Absolute Desviation)(desvio médio absoluto)
+* MAE (Mean Absolute Erro)(erro médio absoluto) 
+* MSE (Mean Square Error)(erro quadrático médio)
+* RMSE(Root Mean Square Error)(raiz quadrada do erro quadrático médio)
+* MAPE (Mean Absolute Percentege Error)(Erro médio percentual absoluto)
+
+Sabemos que:
+
+* $Z_t$: é dado observado no tempo $t$
+* $\hat Z_t$ é dado ajustado pelo modelo no tempo $t$
+
+Portanto $Z_t-\hat Z_t$ é o erro de previsão.
+
+Estamos interessados em encontrar o menor de todos. Quanto menor, melhor!
+
+# Sazonalidade
+
+Padrões típidos no comportamento da série que se repetem periodicamente.
+
+Notação: 
+
+  * $\rho_t$: fator sazonal
+  
+Então, temos $\rho_1,...,\rho_s$, $s$=nº de fatores sazonais.
+
+Uma propriedade importante:
+
+  * $\sum^s_{i=1}=s$
+  
+Além disso, a sazonalidade pode ser:
+
+  * Aditiva: 
+      * $Z_t=\mu(t)+\rho_t+epsilon_t$ (modelo geral)
+  * Multiplicativa:
+      * Z_t=\mu(t)\rho_t+epsilon_t (modelo geral)
+
+## Método de Amortecimento exponencial de Holt-Winters (dados com sazonalidade)
+
+Este modelo ajuda a descobrir padrão de comportamento mais complexos. A previsao deste modelo é feita de acordo com a série que pode ser Sazonal Aditiva ou Sazonal Multiplicativa.
+
+É uma adaptação do modelo de amortecimento exponencial de Holt-Winters para dados com sazonalidade. o parâmtro $\rho$ será incluído nas equações  e teremos um novo parâmtro que será a constante de amortecimento dos fatores sazonais, dada por:
+
+  * $\gamma$: constante de amortecimento dos fatores sazonais
+  
+Além do parâmetro a ser estimado:
+
+  * $\hat \rho_{m(t)} (t)$: estimador dos fatores sazonais em $t$ ($s$ fatores sazonais)
+
+No R, considerando a série sazonal aditiva (por default do R):
+
+```{r}
+ajuste_com_sazonalidade<-HoltWinters(AirPassengers)
+plot(ajuste_com_sazonalidade)
+```
+
+Com a função `forecast()` podemos obter previsoes do modelo, veja:
+
+```{r}
+previsao_com_sazonalidade<-forecast(ajuste_com_sazonalidade)
+plot(previsao_com_sazonalidade)
+```
+
+# Modelos ARIMA
+
+Box & jankis propuseram esta classe de modelagem autoregressiva integrada e de médias móveis. Os objetivos principais desse tipo de ajuste são:
+
+  * Especificar a classe geral do modelo
+  * identificar o modelo a partir das funções de autocorrelação e autocorrelação parcial
+  * Estimação dos parâmetros do modelo
+  * Diagnóstico do modelo
+  
+Considere que o deslocamento de "$k$" unidades de tempo será usado com a notação **lag**.
+
+**Def.:** (Autocovariância de lag $k$)
+
+* $\gamma_k$= $cov(Z_t, Z_{t+k})$ = $cov(Z_t, Z_{t-k})$ = $\gamma_{-k}$
+* Se $k=0$ , então $\gamma_0$= $cov(Z_t, Z_{t})$ = $var(Z_t)$
+
+**Def.:** (Função de Autocorrelação)(FAC) (ACF em inglês)
+
+* $\rho=\frac{\gamma_k}{\gamma_0}$
+* Correlogramas mostram o comportamento da FAC
+
+No R:
+
+```{r}
+acf(AirPassengers, lag.max = 50)
+```
+
+**Def.:** (Função de Autocorrelação parcial)(FACP) (PACF em inglês)
+É a correlação entre $Z_t$ e $Z_{t+k}$ retirndo o efeito dos valores intermediários
+
+* $\phi_{kk}=corr(Z_t, Z_{t+k}|Z_{t+1},...,Z_{t+k-1}) $
+
+No R:
+
+```{r}
+pacf(AirPassengers, lag.max = 50)
+```
+
+### Generalizando
+
+Modelo | FAC | FACP
+------------- | ------------- | -------------
+AR(p) | decrescimento exponencial | corte brusco até o lag $p$
+MA(q) | cortes bruscos até o lag $q$| decrescimento exponencial 
+ARMA(p,q) | Decresce exponencialmente com cortes bruscos até o lag $q$ | Decresce exponencialmente com cortes bruscos até o lag $p$
+
+### Processo de Box-Jenkis 
+
+O processo de Box-Jenkis é dado por:
+
+  * $Z_t=\psi(B)\epsilon_t$
+  * $Z_t=\frac{\theta(B)}{\phi(B)}\epsilon_t$
+  
+Portando o processo linear geral é dado por:
+
+$$
+\phi(B)Z_t=\theta(B)\epsilon_t
+$$
+
+## Condições para modelagem ARIMA
+
+  * Normalidade
+  * Estacionariedade (Caso seja estacionária, garante as duas próximas condições)
+  * Homocedasticidade 
+  * Invertibilidade
+  
+### Testando a normalidade
+
+  * Teste de Kolmogorov-Smirnov
+  * Teste Anderson-Darling
+  * Teste Jarque-Bera
+  * QQ-Plot
+  * Shapiro-Wilk
+  
+#### Transformação para normalidade
+
+  * Logarítimica
+  * Box-Cox
+  
+### Testando a estacionariedade
+
+Aqui podemos avaliar se existe raiz unitária, onde $H_0$: Existe raíz unitária, caso a hipótese não seja rejeitada, temos evidências de que não existe estacionariedade.
+
+  * Teste de Dickey-Fuller Aumentado (ADF)
+  * Teste de Phillips Perron 
+
+#### Transformações para estacionáriedade
+
+Fazer sucessivas diferenças até obter a série estacionária (em geral, com duas diferenças já ocorre a estacionariedade)
+
+## Modelos Autoregressívos $AR(p)$
+
+Quando $\phi(B)Z_t=\epsilon_t$
+
+## Modelos de Médias Móveis $MA(q)$
+
+Ocorre quando $Z_t=\theta(B)\epsilon_t$
+
+## Modelos ARMA(p,q)
+
+Quando $\phi(B)Z_t=\theta(B)\epsilon_t$
+
+Ocorre um processo Autoregressivo e modelo de médias móveis simultâneamente de ordens "$p$" e "$q$".
+
+note que:
+
+  * se q=0, processo auto-regressivo de ordem $p$: $AR(p)$
+  * se p=0, processo de médias móveis de ordem $q$: $MA(q)$
+
+## Modelos ARIMA(p,d,q)
+
+Autoregressivo, integrado e de médias móveis
+
+$$
+\phi(B)(1-B)^d Z_t = \theta(B)\epsilon_t
+$$
+
+# SARIMA
+
+É equivalente a um modelo ARIMA sazonal ou ARIMA multiplicativo. 
+
+Nessa classe de modelos com sazonalidade, existem procesos puramente sazonais:
+
+  * AR(P) - Autoregressivo puramente sazonal
+  * MA(Q) - Médias móveis puramente sazonais
+
+E por fim o os modelos dessa classe contam com um operador de diferenças sazonais defindo da seguinte maneira: 
+
+$$
+\Delta_sZ_t=Z_t-Z_{t-s}
+$$
+
+Onde $\D$ é o númerro de diferenças sazonais necessárias até a série ficar sazonalmente estacionária, logo
+
+$$
+\Delta_s^DZ_t
+$$
+
+logo $\Delta_s=(1-B^s)$ então o modelo $SARIMA_{(p,q,d)\times(P,Q,D)_s}$ é dado por:
+
+$$
+\phi(B) \Phi(B^s)(1-B^D)Z_t=\theta(b)\Theta(B^s)\epsilon_t
+$$
+
+## Ajustando no R:
+
+```{r}
+arima=auto.arima(AirPassengers)
+summary(arima)
+
+plot(AirPassengers)
+```
+
+
+# Critérios de Seleção de um modelo
+
+## AIC (Akeike Information Criterion)
+
+Selecionar o modelo que minimiza a variância dos resíduos e penaliza o excesso de parâmetros
+
+O modelo selecionado será o que minimiza o AIC
+
+## BIC (BAyesian Information Criterion)
+
+É uma atualização do AIC, com os mesmo critérios
+
+## SBC (Scwartz Bayesian Criterion)
+
+É uma espécie de simplificação do BIC
+
+# Diagnóstico do modelo;
+
+## Análide de resíduos 
+
+Desejável $iid(0,\hat\sigma^2_\epsilon_t)$
+
+## Testes de independência
+
+Desejável FAC **nula**
+
+### 1ª opção: FAC dos resíduos
+
+Desejável algo como:
+
+```{r}
+acf(rnorm(10000))
+```
+
+
+### 2ª opção 
+
+Para os três testes a seguir, considere as hipóteses:
+
+$$
+H_0: \rho_1=\rho_2=...=\rho_k \\
+H_1: \text{existe pelo pelo menos 1} \rho_k \neq 0
+$$
+Se o valor p for maior do que 0.05 não rejeita a hipótese de independência
+
+Os testes são:
+
+#### Teste de Durblin-Watson
+
+#### Teste Ljusy-Bose
+
+#### Teste BDS (Bruck, Dechert, Scwunknon)
+
+### Visualmente
+
+A função do R que permite fazer o diagnóstico do modelo de forma visual é:
+
+```{r}
+diag <- tsdiag(arima, gof.lag = 20)
+```
+
+
+
+
+Fonte: [Analise de Series Temporais em R um curso introdutorio](https://www.researchgate.net/profile/Pedro_Ferreira6/publication/303382166_Analise_de_Series_Temporais_em_R_um_curso_introdutorio/links/573f4c6708aea45ee844fbfc/Analise-de-Series-Temporais-em-R-um-curso-introdutorio.pdf)
