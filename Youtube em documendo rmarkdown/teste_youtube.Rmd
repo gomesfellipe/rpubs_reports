@@ -1,0 +1,38 @@
+---
+title: "Vídeo e Rmarkdown"
+author: "Fellipe"
+date: "14 de abril de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Inserindo Vídeo do youtube no Rmarkdown
+
+O pacote utilizado será o [`vembedr`](https://cran.r-project.org/web/packages/vembedr/), para instalar o pacote basta rodar:
+
+```{r,eval=F}
+# Instalando o Pacote:
+devtools::install_github("ijlyttle/vembedr")
+```
+
+Após instalar o pacote, basta carrega-lo e para aparecer o vídeo no documento usar a função `embed_youtube()`, veja:
+
+```{r}
+# Para estes exemplos, carregas os pacotes:
+library("htmltools")
+library("vembedr")
+
+# Com a função embed_url (), você pode usar o URL do seu navegador para incorporar o vídeo:
+  
+embed_url("https://www.youtube.com/watch?v=tluFQCOezZE")
+```
+
+Para mais informações de como utilizar o pacote consultar seu [manual](https://cran.r-project.org/web/packages/vembedr/vembedr.pdf), as vinhetas disponíveis:
+
+  * [helpers](https://cran.r-project.org/web/packages/vembedr/vignettes/helpers.html)
+  * [video services](https://cran.r-project.org/web/packages/vembedr/vignettes/services.html)
+  
+Ou ainda a [página do desenvolvedor no github](https://github.com/ijlyttle/vembedr)

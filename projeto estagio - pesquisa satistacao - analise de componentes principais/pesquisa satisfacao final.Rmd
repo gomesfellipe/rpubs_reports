@@ -1,0 +1,295 @@
+---
+title: "Analisando Componentes Principais em pesquisa de satisfação"
+author: "Rafael Teixeira e Fellipe Gomes"
+date: "26 de janeiro de 2018"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE,warning=F}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressMessages(library(ggplot2)) 
+suppressMessages(library(ggfortify))
+suppressMessages(library(readr))
+suppressMessages(library(knitr))
+suppressMessages(library(plotly))
+suppressMessages(library(kableExtra))
+suppressMessages(library(GGally))
+
+
+dados <- read_delim("dados_simples2.txt", 
+                    ";", escape_double = FALSE, trim_ws = TRUE)
+
+temp=as.data.frame(dados[,-1])
+
+
+
+```
+
+# O que foi feito?
+
+Com uma base de dados referente a uma pesquisa de satisfação, foi realizada uma análise de componentes principais, além do cálculo do coeficiente de correlação de spearman.
+
+# Base de dados
+
+Os nomes das colunas presentes da base de dados do estudo são os seguintes:
+
+```{r}
+names(temp)
+```
+
+
+
+
+Notou-se que existiam duas perguntas referêntes ao mesmo tópico. Além disso o tipo de variável presente na base de dados é categórico ordinal portanto a seguinte transformação foi realizada a fim de estudar o comportamento destes dados:
+
+Original | Transformado
+------------- | -------------
+Muito Satisfeito | 10
+Satisfeito | 6,6667 
+Pouco Satisfeito | 3,3333 
+Nada Satisfeito | 0
+Não se aplica | `NA`
+
+
+
+# Correlações
+
+Para calcular a correlação optou-se por utilizar o coeficiente de correlação de spearman pela sua característica de avaliar os postos detectando a associação entre variáveis ordinais.
+
+A seguir a correlação entre as variáveis em foco:
+
+```{r,echo=F,warning=F}
+suppressMessages(library(stringr))
+cor=cor(temp, method = "spearman",use="na.or.complete")
+
+tabela=cbind(
+round(c(
+cor.test(temp[,1],temp[,2],method="spearman", use="na.or.complete")$estimate,
+cor.test(temp[,3],temp[,4],method="spearman", use="na.or.complete")$estimate,
+cor.test(temp[,5],temp[,6],method="spearman", use="na.or.complete")$estimate,
+cor.test(temp[,7],temp[,8],method="spearman", use="na.or.complete")$estimate,
+cor.test(temp[,9],temp[,10],method="spearman", use="na.or.complete")$estimate,
+cor.test(temp[,11],temp[,12],method="spearman", use="na.or.complete")$estimate,
+cor.test(temp[,13],temp[,14],method="spearman", use="na.or.complete")$estimate
+),4)
+,
+round(c(
+cor.test(temp[,1],temp[,2],method="spearman", use="na.or.complete")$p.value,
+cor.test(temp[,3],temp[,4],method="spearman", use="na.or.complete")$p.value,
+cor.test(temp[,5],temp[,6],method="spearman", use="na.or.complete")$p.value,
+cor.test(temp[,7],temp[,8],method="spearman", use="na.or.complete")$p.value,
+cor.test(temp[,9],temp[,10],method="spearman", use="na.or.complete")$p.value,
+cor.test(temp[,11],temp[,12],method="spearman", use="na.or.complete")$p.value,
+cor.test(temp[,13],temp[,14],method="spearman", use="na.or.complete")$p.value
+),8)
+
+)
+
+j=1
+for(i in seq(1,13,2)){
+rownames(tabela)[j]=str_c(str_sub(names(dados[,-1])[i], end = -7)," - ",str_sub(names(dados[,-1])[i+1], end = -7))
+rownames(tabela)[j]=str_replace(rownames(tabela)[j],pattern = "_",replacement = " ")
+j=j+1
+}
+
+colnames(tabela)=c("correlação", "valor p")
+
+suppressMessages(library(formattable))
+formattable(as.data.frame(tabela), list(
+  `valor p` = formatter("span", 
+    style = ~ style(color = ifelse(`valor p` >= 0.05, "green", "red"))),
+   area(col = c(`correlação`)) ~ normalize_bar("lightgrey", 0.2)
+  
+))
+
+
+```
+
+```{r,warning=F,echo=F}
+suppressMessages(library(data.table)) 
+suppressMessages(library(gtools))
+
+cor_all <- function(df){
+  cat_var <- colnames(df)
+  cat_var_grid <- data.table(combinations(n = length(cat_var), r = 2, v = cat_var, repeats.allowed = FALSE))
+  
+  do.call(rbind,
+          apply(cat_var_grid, 1, function(x){
+            tmp <- as.character(x)
+            vec1 <- unlist(df[,tmp[1]])
+            vec2 <- unlist(df[,tmp[2]])
+            
+            data.table(
+              variable_x = tmp[1],
+              variable_y = tmp[2],
+              p.value = cor.test(vec1, vec2,method="spearman", use="na.or.complete")$p.value,
+              cor = cor.test(x = vec1, y = vec2,method="spearman", use="na.or.complete")$estimate
+            )
+          }))
+  
+}
+
+results <- cor_all(df = temp)
+```
+
+Veja como ficou registrado os cálculos efetuados:
+
+```{r,echo=F,warning=F}
+#DT::datatable(results) 
+library(data.table)
+library(DT)
+as.datatable(formattable(as.data.frame(results)%>%arrange( desc(cor) ), list(
+  p.value = formatter("span", 
+    style = ~ style(color = ifelse(p.value >= 0.05, "green", "red"))),
+    area(col = c(cor)) ~ color_bar("lightgrey")
+  
+)))
+```
+
+Portanto, veja a seguir os coeficientes de correlação calculados para a associação entre cada variável dois a dois
+
+```{r,echo=F}
+#Coeficientes de correlacoes de spearman
+g1 <- ggplot(results, aes(variable_x, variable_y)) +
+  geom_tile(aes(fill = cor), colour = "black") +
+  theme(axis.text.x=element_text(angle=45, hjust=1)) +
+  scale_fill_gradient(low = "white", high = "steelblue") +
+  theme_bw() + xlab(NULL) + ylab(NULL) +
+  theme(axis.text.x=element_text(angle = -90, hjust = 0)) +
+  ggtitle("Correlações tal de spearman heatmap")
+ggplotly(g1)
+```
+
+E a seguir podemos conferir o valor p computado para o teste que determina se existem evidencias para rejeitar a hipótese de que o coeficiente vale 0 (indicando que as variáveis não possuem associação):
+
+```{r,echo=F}
+#P.valor de teste para coeficientes de correlacoes de spearman
+g2 <- ggplot(results, aes(variable_x, variable_y)) +
+  geom_tile(aes(fill = p.value), colour = "black") +
+  theme(axis.text.x=element_text(angle=45, hjust=1)) +
+  scale_fill_gradient(low = "white", high = "steelblue") +
+  theme_bw() + xlab(NULL) + ylab(NULL) +
+  theme(axis.text.x=element_text(angle = -90, hjust = 0)) +
+  ggtitle("Correlações tal de spearman heatmap")
+ggplotly(g2)
+```
+
+Correlações que foram maior que 0.6:
+
+```{r,warning=F, echo=F}
+#Carregando o pacote:
+suppressMessages(library(rhandsontable))
+
+#Tabela para correlações
+rhandsontable(cor(temp,method="spearman", use="na.or.complete"), readOnly = TRUE, width = 750, height = 300) %>%
+  hot_cols(renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+           Handsontable.renderers.TextRenderer.apply(this, arguments);
+           if (row == col) {
+           td.style.background = 'lightgrey';
+           } else if (col > row) {
+           td.style.background = 'grey';
+           td.style.color = 'grey';
+           } else if (value < -0.6) {
+           td.style.background = 'pink';
+           } else if (value > 0.6) {
+           td.style.background = 'lightgreen';
+           }
+           }")
+```
+
+# Componentes principais:
+
+
+Para a análise de componentes principais, foi substituido `NA` pela média de cada pergunta da seguinte maneira:
+
+```{r,echo=F}
+for(j in 1:length(temp[1,])){
+  temp[is.na(temp[,j]),j]=mean(temp[,j],na.rm = T)
+}
+```
+
+Portanto, os dados do estudo agora estão da seguinte maneira:
+
+```{r,echo=F}
+temp=as.data.frame(temp, row.names.data.frame=c(dados[,1]))
+
+kable(temp, "html",row.names = T)%>%
+  kable_styling()%>%
+  scroll_box(width = "900px", height = "500px")
+
+```
+
+
+
+
+## Resultados das Componentes principais:
+
+A seguir os resultados das 4 primeiras componentes:
+
+```{r,echo=F}
+acpcor=prcomp(temp, scale = TRUE)
+data.frame(acpcor$x[,1:4])%>%
+  kable( "html",row.names = T)%>%
+  kable_styling()%>%
+  scroll_box(width = "900px", height = "500px")
+  
+```
+
+Resumo das componentes:
+
+```{r,echo=F}
+summary(acpcor)
+```
+
+# Visualmente:
+
+## Screeplot:
+
+```{r,echo=F}
+#Funcao screeplot:
+ggscreeplot <- function(pcobj, type = c('pev', 'cev')) 
+{
+  type <- match.arg(type)
+  d <- pcobj$sdev^2
+  yvar <- switch(type, 
+                 pev = d / sum(d), 
+                 cev = cumsum(d) / sum(d))
+  
+  yvar.lab <- switch(type,
+                     pev = 'proportion of explained variance',
+                     cev = 'cumulative proportion of explained variance')
+  
+  df <- data.frame(PC = 1:length(d), yvar = yvar)
+  
+  ggplot(data = df, aes(x = PC, y = yvar)) + 
+    xlab('principal component number') + ylab(yvar.lab) +
+    geom_point() + geom_path()
+}
+```
+
+
+```{r,warning=F,echo=F}
+g2=ggscreeplot(acpcor)+theme_bw()+labs(x="Número da Componente Principal", y="Proporção explicada da variância")+scale_y_continuous(limits = c(0,0.8),breaks=seq(0,0.8,0.05))
+ggplotly(g2)
+png("screeplot.png",width = 750,height = 400)
+g2
+dev.off()
+```
+
+## Biplot:
+
+```{r,warning=F,echo=F}
+g1=autoplot(acpcor, label = TRUE, label.size = 1,
+                   loadings = TRUE, loadings.label = TRUE, loadings.label.size  = 3)
+g1=g1+theme_bw()+labs(x="Componente 1", y="Componente 2")
+plotly::ggplotly(g1)
+png("acp.png",width = 750,height = 400)
+g1
+dev.off()
+```
+

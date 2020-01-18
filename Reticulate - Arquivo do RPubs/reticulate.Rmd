@@ -1,0 +1,403 @@
+---
+title: "Reticulate"
+author: "Fellipe Gomes"
+date: "21 de abril de 2018"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::knit_engines$set(python = reticulate::eng_python)
+require(reticulate)
+require(dplyr)
+##essa linha e so para definir o python que esta habilitado no seu computador
+use_python(Sys.which("python")%>% as.character())
+```
+
+# Instrução inicial* (Importante)
+
+Para utilizar o Python e o Markdown de forma que seja possível renderizar o documento para obter o output, antes é nescessário conferir se as configurações de `PATH` do sistema não estão dando conflito.
+
+A seguinte solução proposta [neste link do stackoverflow](https://stackoverflow.com/questions/41994485/error-could-not-find-or-load-the-qt-platform-plugin-windows-while-using-matplo) resolveu ou problema:
+
+
+  * Open Control Panel-> System Settings -> Advanced System Settings ->Environment Variables ->New. Set Variable Name: QT_PLUGIN_PATH , Variable Directory:
+
+`C:\Users\Fellipe\Anaconda3` e `C:\Program Files\MiKTeX 2.9\miktex\bin\x64`
+
+# O pacote reticulate
+
+O pacote reticulate fornece um conjunto abrangente de ferramentas para interoperabilidade entre o Python e o R. O pacote inclui recursos para:
+
+![](https://github.com/rstudio/reticulate/raw/master/images/reticulated_python.png){width=20%}
+
+  * Chamando Python de R de várias maneiras, incluindo R Markdown, sourcing de scripts Python, importando módulos Python e usando Python interativamente dentro de uma sessão R.
+
+  * Tradução entre objetos R e Python (por exemplo, entre quadros de dados R e Pandas, ou entre matrizes R e matrizes NumPy).
+
+  * Ligação flexível para diferentes versões do Python, incluindo ambientes virtuais e ambientes Conda.
+
+O Reticulate incorpora uma sessão Python em sua sessão R, permitindo interoperabilidade perfeita e de alto desempenho. Se você é um desenvolvedor de R que usa Python para algum de seus trabalhos ou um membro da equipe de ciência de dados que usa os dois idiomas, o reticulate pode simplificar drasticamente seu fluxo de trabalho!
+
+## Começando
+
+#### Instalação
+
+Instale o pacote reticulado do CRAN da seguinte maneira:
+
+```{r,eval=F}
+install.packages("reticulate")
+```
+
+#### Versão em Python
+
+Por padrão, o reticulate usa a versão do Python encontrada em seu PATH (por exemplo, `Sys.which("python")`).
+
+#### Fornecendo dicas
+
+Há duas maneiras de fornecer dicas sobre qual versão do Python deve ser usada:
+
+  1 - Configurando o valor da variável de ambiente `RETICULATE_PYTHON` para um binário do Python. Observe que, se você definir essa variável de ambiente, a versão especificada do Python sempre será usada (isto é, prescritiva, em vez de consultiva). Para definir o valor de `RETICULATE_PYTHON`, insira `Sys.setenv(RETICULATE_PYTHON = PATH)` no .Rprofile do seu projeto, onde `PATH` é seu binário Python preferido.
+
+  2 -Ao chamar uma destas funções:
+
+Descrição| da função
+------------- | ----------------
+`use_python()` | Especifique o caminho de um binário específico do Python.
+`use_virtualenv()` | Especifique o diretório que contém um virtualenv do Python.
+`use_condaenv()` | Especifique o nome de um ambiente Conda.
+
+A função `use_python()` permite que você especifique uma versão alternativa, por exemplo:
+
+```{r}
+library(reticulate)
+# use_python("C:/Users/gomes/Anaconda3")
+use_virtualenv("~/myenv")
+use_condaenv("myenv")
+```
+
+#### Pacotes Python
+
+Você pode instalar qualquer pacote Python requerido usando ferramentas de shell padrão como `pip` e` conda`. Alternativamente, reticulate inclui um conjunto de funções para gerenciar e instalar pacotes dentro de virtualenvs e Ambientes Conda. Veja o artigo sobre [Instalando o Python Pacotes](https://rstudio.github.io/reticulate/articles/python_packages.html) para detalhes adicionais.
+
+#### Chamando o Python
+
+Existem várias maneiras de integrar o código Python ao seu R
+projetos:
+
+1) [Python no Markdown R](#python-in-r-markdown) - Um novo Python
+mecanismo de linguagem para R Markdown que suporta bidirecional
+comunicação entre R e Python (os fragmentos R podem acessar o Python
+objetos e vice-versa).
+
+2) [Importando módulos Python](# importando-python-modules) - O
+A função `import ()` permite importar qualquer módulo Python e chamar
+funciona diretamente de R.
+
+3) [Sourcing de scripts em Python](# sourcing-python-scripts) - O
+A função `source_python()` permite que você crie um script Python
+mesma maneira que você iria `source ()` um script R (funções Python e
+objetos definidos dentro do script ficam diretamente disponíveis para o R sessão).
+
+4) [REPL do Python](# python-repl) - A função `repl_python()` cria
+um console interativo do Python dentro de R. Objetos que você cria dentro Python estão disponíveis para sua sessão R (e vice-versa).
+
+Cada uma dessas técnicas é explicada em mais detalhes abaixo.
+
+## Python in R Markdown
+
+O pacote ** reticulate ** inclui um mecanismo Python para [R
+Markdown](http://rmarkdown.rstudio.com) com os seguintes recursos:
+
+1) Execute pedaços de Python em uma única sessão do Python incorporada em seu R
+session (shared variables / state entre pedaços de Python)
+
+2) Impressão de saída em Python, incluindo saída gráfica de
+[matplotlib](https://matplotlib.org/).
+
+3) Acesso a objetos criados dentro de blocos do Python usando o `py`
+objeto (por exemplo, `py $ x` acessaria uma variável` x` criada dentro
+Python de R).
+
+4) Acesso a objetos criados dentro de R chunks do Python usando o `r`
+objeto (por exemplo, `r.x` acessaria a variável` x` criada dentro de R
+de Python)
+
+<div style = "clear: both;">
+
+</ div>
+
+A conversão interna para muitos tipos de objeto Python é fornecida, incluindo
+[NumPy](http://www.numpy.org/) matrizes e
+[Pandas](https://pandas.pydata.org/) quadros de dados. Do exemplo, você pode
+use Pandas para ler e manipular dados, em seguida, plotar facilmente os dados do Pandas
+frame usando [ggplot2](http://ggplot2.org/):
+
+```{python}
+# Chunk em Python
+import pandas
+iris = pandas.read_csv("iris.csv")
+```
+
+```{r}
+# Chunk em R
+library(ggplot2)
+ggplot(py$iris, aes(Sepal.Length, Sepal.Width, col=Species))+
+  geom_point()+
+  geom_jitter()
+```
+
+Observe que o mecanismo Python reticulado é ativado por padrão dentro de R
+Markdown sempre que o reticulate estiver instalado.
+
+Veja o [R Markdown Python
+Engine](https://rstudio.github.io/reticulate/articles/r_markdown.html)
+documentação para detalhes adicionais.
+
+## Importando módulos Python
+
+Você pode usar a função `import ()` para importar qualquer módulo Python e chamar
+a partir de R. Por exemplo, este código importa o módulo `os` do Python e
+chama a função `listdir ()`:
+
+```{r,eval=F}
+library(reticulate)
+os <- import("os")
+os$listdir(".")
+```
+
+Funções e outros dados dentro de módulos e classes do Python podem ser
+acessado através do operador `$` (análogo ao modo como você interage
+com uma lista R, ambiente ou classe de referência).
+
+Os módulos importados do Python suportam o preenchimento de código e a ajuda em linha:
+
+![](https://github.com/rstudio/reticulate/raw/master/images/reticulate_completion.png)
+
+Veja [Chamando o Python de
+R](https://rstudio.github.io/reticulate/articles/calling_python.html)
+para detalhes adicionais sobre como interagir com objetos Python de dentro de R.
+
+## Sourcing de scripts Python
+
+Você pode criar qualquer script Python da mesma forma que você cria um script R
+usando a função `source_python()`. Por exemplo, se você tivesse o
+seguindo o script Python *iris.py *:
+
+```{python}
+# Codigo em Python
+import pandas
+def read_iris(file):
+  iris = pandas.read_csv(file)
+  return iris
+```
+
+Então você pode criar o script e chamar a função `read_iris()` como
+segue:
+
+```{r,eval=F}
+# Codigo em R
+source_python("iris.py")
+iris <- read_iris("iris.csv")
+
+ggplot(py$iris, aes(Sepal.Length, Sepal.Width, col=Species))+
+  geom_point()+
+  geom_jitter()
+```
+
+Veja a documentação `source_python()` para detalhes adicionais sobre
+código Python de sourcing.
+
+## REPL de Python
+
+Se você quer trabalhar com Python interativamente, você pode chamar o
+`repl_python()` function, que fornece um REPL de Python embutido
+sua sessão R. Objetos criados dentro do REPL Python podem ser acessados
+de R usando o objeto `py` exportado de reticulate. Por exemplo:
+
+! [](https://github.com/rstudio/reticulate/raw/master/images/reticulate_completion.png)
+
+Digite `exit` dentro do Python REPL para retornar ao prompt R.
+
+Observe que o código Python também pode acessar objetos de dentro da sessão R
+usando o objeto `r` (por exemplo` r.flights`). Veja o `repl_python()`
+documentação para adicional de
+
+## REPL de Python
+
+Se você quer trabalhar com Python interativamente, você pode chamar o
+`repl_python ()` function, que fornece um REPL de Python embutido
+sua sessão R. Objetos criados dentro do REPL Python podem ser acessados
+de R usando o objeto `py` exportado de reticulate. Por exemplo:
+
+! [](https://github.com/rstudio/reticulate/raw/master/images/python_repl.png)
+
+Digite `exit` dentro do Python REPL para retornar ao prompt R.
+
+Observe que o código Python também pode acessar objetos de dentro da sessão R
+usando o objeto `r` (por exemplo` r.flights`). Veja o `repl_python ()`
+documentação para detalhes adicionais sobre como usar o REPL incorporado em Python.
+
+## Conversão entre R e Python
+
+reticulate fornece os genéricos `r_to_py()` para converter objetos R em objetos Python e `py_to_r()` para converter objetos Python de volta em objetos R. Os autores de pacotes podem fornecer métodos para esses genéricos converterem objetos Python e R que não são manipulados por reticulate.
+
+reticulate fornece operadores de conversão para alguns dos objetos Python mais usados, incluindo:
+
+  * Objetos Python incorporados (listas, dicionários, números, strings, tuplas)
+  * Matrizes NumPy,
+  * Objetos Pandas (Index, Series, DataFrame),
+  * Objetos de data e hora do Python.
+
+Ao chamar o Python, os tipos de dados R são convertidos automaticamente para
+seus tipos equivalentes de Python. Quando os valores são retornados do Python para o R
+eles são convertidos de volta para os tipos R. Tipos são convertidos como
+segue:
+
+| R | Python | Exemplos |
+| ---------------------- | ----------------- | ------------------------------------------------ |
+| Vetor de elemento único | Escalar | `1`,` 1L`, `TRUE`,` "foo" `|
+| Vetor de vários elementos | List | `c (1.0, 2.0, 3.0)`, `c (1L, 2L, 3L)` |
+| Lista de vários tipos | Tuple | `list (1L, TRUE," foo ")` |
+| Lista nomeada | Dict | `list (a = 1L, b = 2.0)`, `dict (x = x_data)` |
+| Matriz / Matriz | Nump | ndarray | `matriz (c (1,2,3,4), nrow = 2, ncol = 2)` |
+| Quadro de dados | Pandas DataFrame | `data.frame (x = c (1,2,3), y = c (" a "," b "," c "))` |
+| Função | Função Python | `função (x) x + 1` |
+| `NULL`, `TRUE`, `FALSE` | 	`None`, `True`, `False` | `NULL`,` TRUE`, `FALSE` |
+
+Se um objeto Python de uma classe personalizada for retornado, então uma referência R para
+esse objeto é retornado. Você pode chamar métodos e acessar propriedades de
+o objeto como se fosse uma instância de uma classe de referência R.
+
+## Por que reticular?
+
+Da [Wikipedia](https://en.wikipedia.org/wiki/Reticulated_python)
+artigo sobre o python reticulado:
+
+> O python reticulado é uma espécie de python encontrado no sudeste da Ásia.
+> Eles são as cobras mais longas do mundo e os répteis mais longos ... O específico
+> nome, reticulatus, significa latim “net-like”, ou reticulado, e é
+> uma referência ao padrão de cores complexo.
+
+De
+[Merriam-Webster](https://www.merriam-webster.com/dictionary/reticulate)
+definição de reticulate:
+
+> 1: assemelhando-se a uma rede ou rede; especialmente: ter veias, fibras ou
+> linhas cruzando uma folha reticulada. 2: ser ou envolver evolução
+> mudança dependente da recombinação genética envolvendo diversos
+> populações de cruzamento.
+
+O pacote permite que você * reticule * o código Python em R, criando um
+nova raça de projeto que une as duas linguagens.
+
+# Aprendendo mais
+
+Os seguintes artigos cobrem os vários aspectos do uso
+**reticulado**
+
+## Chamando o Python
+
+[Chamando o Python de R](https://rstudio.github.io/reticulate/articles/calling_python.html)
+Descreve as várias maneiras de acessar objetos Python de R, bem
+como funções disponíveis para interações e conversões mais avançadas
+comportamento.
+
+#### Conversão de objetos
+
+Por padrão, quando os objetos Python são retornados para R, eles são convertidos em seus tipos R equivalentes. No entanto, se você preferir tornar a conversão de Python para R explícita e lidar com objetos nativos do Python por padrão, poderá passar `convert = FALSE` para a função de importação. Neste caso, a conversão de Python para R será desativada para o módulo retornado da importação. Por exemplo:
+
+```{r}
+# import numpy e não especifica nenhuma conversão automática de Python para R
+np <- import ("numpy", convert = FALSE)
+```
+
+```{r}
+# faça algumas manipulações de array com o NumPy
+a <- np$array(c(1:4))
+soma <- a$cumsum()
+```
+
+```{r}
+# converter para R explicitamente no final
+py_to_r(soma)
+```
+
+Como ilustrado acima, se você precisar acessar um objeto R no final de seus cálculos, poderá chamar a função py_to_r () explicitamente.
+
+#### Conseguindo ajuda
+
+Você pode imprimir documentação em qualquer objeto Python usando a função py_help (). Por exemplo:
+
+```{r,eval=F}
+os <- import ("os")
+py_help(os$chdir)
+```
+
+
+## R Markdown Python Engine
+
+[R Markdown Python Engine](https://rstudio.github.io/reticulate/articles/r_markdown.html)
+- Fornece detalhes sobre o uso de fragmentos do Python no R Markdown
+documentos, incluindo como chamar o código Python a partir de pedaços R e
+vice-versa.
+
+#### Chunks de Python
+
+Os fragmentos de código Python funcionam exatamente como os fragmentos de código R: o código Python é executado e qualquer saída impressa ou gráfica (matplotlib) é incluída no documento.
+
+Todas as partes do Python são executadas em uma única sessão do Python, portanto, têm acesso a todos os objetos criados em partes anteriores. Opções de partes como echo, include, etc. funcionam como esperado.
+
+Veja um documento R Markdown que demonstra isso:
+
+```{python}
+# Chunk de python
+import matplotlib.pyplot as plt
+import numpy as np
+t = np.arange(0.0, 2.0, 0.01)
+s = 1 + np.sin(2*np.pi*t)
+plt.plot(t,s)
+plt.xlabel('time (s)')
+plt.ylabel('voltage (mV)')
+plt.grid(True)
+plt.savefig('test.png')
+plt.show()
+```
+
+
+- [Versão em Python Configuração](https://rstudio.github.io/reticulate/articles/versions.html)
+- Descreve as facilidades para determinar qual versão do Python é
+usado por reticulate dentro de uma sessão R.
+
+- [Instalando o Python Pacotes](https://rstudio.github.io/reticulate/articles/python_packages.html)
+- Documentação sobre a instalação de pacotes Python do PyPI ou Conda,
+e gerenciar instalações de pacotes usando virtualenvs e Conda
+ambientes.
+
+- [Usando reticulate em um R Pacote](https://rstudio.github.io/reticulate/articles/package.html)
+- Diretrizes e melhores práticas para usar o reticulate em um R
+pacote.
+
+- [Matrizes em R e Python](https://rstudio.github.io/reticulate/articles/arrays.html) -
+Discussão avançada das diferenças entre arrays em R e
+Python e as implicações para conversão e interoperabilidade.
+
+# Fontes:
+
+  * <https://github.com/rstudio/reticulate>
+  * <https://rstudio.github.io/reticulate/articles/r_markdown.html>
+
+
+
+
+
+
+
+
+
+
+

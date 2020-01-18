@@ -1,0 +1,196 @@
+---
+title: "Classificação com Naive Bayes"
+author: "Fellipe Gomes"
+date: "31 de outubro de 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+geometry: margin=lin
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+
+#Pacotes utilizados:
+library(dplyr)
+
+library(ggplot2)
+
+library(GGally)
+
+library(gridExtra)
+
+library(ROCR)
+
+library(tabplot)
+
+library(knitr)
+
+library(kableExtra)
+
+library(caret)
+
+library(e1071)
+
+library(RSNNS)
+
+```
+
+# Introdução
+
+O trabalho proposto foi o seguinte:
+
+Recebem-se diversos documentos em formato PDF que são chamados de ACORDAO. Em cada ACORDAO existe uma sequencia de frases onde cada uma dessas frases estão relacionadas a um desfecho. 
+
+Deseja-se avaliar um modelo de classificação com o algorítmo *Naive* Bayes com a finalidade de prever os desfechos de dados futuros.
+
+Após diversos tratamentos da base de cados, pode-se observaro seguinte banco:
+
+
+```{r}
+dados <- read_csv("C:/Users/Fellipe/Dropbox/RPubs/Projeto Estagio/Apresentacao/classificado_classe_unica_prioridade.csv")
+
+#Transformando a base para fator:
+dados=dados[,-1]
+dados$classes=as.factor(dados$classes)
+dados$key=as.factor(dados$key)
+dados$sentence=as.factor(dados$sentence)
+dados=as.data.frame(dados)
+
+#Comando para print da base de dados:
+kable(dados, "html")%>%
+  kable_styling()%>%
+  scroll_box(width = "800px", height = "500px")
+```
+
+# Análise exploratória:
+
+Primeiramente verificou-se como se apresentavam estes dados, vejamos:
+
+## Distribuição do bando de dados:
+
+A seguir confere-se a distribuição do bando de dados segundo a classificação:
+
+```{r, echo=F}
+tableplot(dados, sortCol = classes)
+```
+
+## Classes:
+
+As classes presentes no banco de dados são:
+
+```{r}
+kable(data.frame(table(dados$classes),round(table(dados$classes)/sum(table(dados$classes))*100,2)), "html")%>%
+  kable_styling()
+```
+
+## De forma visual
+
+### Frequência das classes:
+
+```{r}
+ggplot(aes(x=classes, fill=classes), data=dados)+geom_bar()
+```
+
+### Frequência do desfecho por classes:
+
+```{r}
+ggplot(data=dados,aes( x=sentence, fill=classes))+
+geom_bar()+
+facet_wrap(~classes)
+```
+
+Como algumas classes possuem muitas observações enquanto outras classes contam com poucas observações.
+
+
+# Classificação com Naive Bayes
+
+### Modelo sem complemento na base de dados
+
+Inicialmente a proposta era utilizar apenas a coluna de sentenças, porém o ajuste acabou ficando comprometido apresentando acurácia sempre inferior a 40%. Veja:
+
+```{r}
+amostra=sample(1:2, length(dados$classes), replace=T, prob=c(0.7,1-0.7))
+  train=dados[amostra==1,]
+  test=dados[amostra==2,]
+  
+  
+  #Criando o modelo:
+  modelo=naiveBayes(train[,-1],train[,1])
+  
+  #Fazendo predicao com os dados de teste:
+  previsao=predict(modelo, test[,-1], type="class");previsao
+  resposta=test[,1]
+  
+
+```
+
+### Matriz de confusao
+
+```{r}
+#Calculando a matrix de confusão:
+caret::confusionMatrix(previsao,resposta)
+```
+
+
+Devido a distribuição dos dados referentes a variável resposta, então toumou-se uma estratégia para ajustar o modelo, veja:
+
+## Novo banco de dados para algorítimo
+
+```{r}
+dados <- readRDS("C:/Users/Fellipe/Dropbox/RPubs/Projeto Estagio/Apresentacao/dados.rds")
+dados$classes=as.factor(dados$classes)
+dados$sentence=as.factor(dados$sentence)
+dados=as.data.frame(dados)
+
+#Comando para print da base de dados:
+kable(dados, "html")%>%
+  kable_styling()%>%
+  scroll_box(width = "1000px", height = "500px")
+
+```
+
+Nesta organização, a ordem de como as sentenças foram apresentadas no documento foram levadas em consideração. Como será visto a seguir, esta abordagem aumentou o poder de previsão do modelo (inicialmente em torno de 20%)
+
+### Modelo com complemento na base de dados
+
+Algorítimo de treino dos dados até que atinga a acurácia mínima de 50%:
+
+```{r}
+acuracia=0               #Iniciando uma vaiavel q guarda a evolução da acurácia
+while(acuracia<0.50){     #Enquanto a acurácia for menor do que 55%
+  i=1
+  
+  #Separando a amostra em 80% para treino e 20% para teste
+  amostra=sample(1:2, length(dados$classes), replace=T, prob=c(0.7,1-0.7))
+  train=dados[amostra==1,]
+  test=dados[amostra==2,]
+  
+  
+  #Criando o modelo:
+  modelo=naiveBayes(train[,-1],train[,1])
+  
+  #Fazendo predicao com os dados de teste:
+  previsao=predict(modelo, test[,-1], type="class");previsao
+  resposta=test[,1]
+  
+  #Calculando a matrix de confusão:
+  matrix_confusao=caret::confusionMatrix(previsao,resposta)
+  acuracia=matrix_confusao$overall[1]
+  }
+```
+
+### Matriz de confusão
+
+```{r}
+matrix_confusao
+```
+
+Através da matriz de consusão pode-se obter muitas conclusões sobre o modelo.
+
+A partir desta matriz podemos observar que houve um ganho quanto ao poder de predição, porém este modelo ainda necessita de tratamentos ou será necessáro a escolha de um novo algorítimo de classificação para resoulver este desafio.
+
+# Conclusão
+
+Podemos concluir que a reorganização da base de dados aumentou o poder de predição do modelo, porém muitas medidas ainda devem ser tomadas para que o modelo entre em produção.

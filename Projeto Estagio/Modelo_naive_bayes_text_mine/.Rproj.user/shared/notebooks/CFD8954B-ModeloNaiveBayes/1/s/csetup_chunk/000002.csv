@@ -1,0 +1,172 @@
+"0","library(dplyr)
+"
+"2","package ‘dplyr’ was built under R version 3.4.2"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(ggplot2)"
+"2","package ‘ggplot2’ was built under R version 3.4.2"
+"0","library(GGally)"
+"2","package ‘GGally’ was built under R version 3.4.2"
+"2","
+Attaching package: ‘GGally’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    nasa
+
+"
+"0","library(gridExtra)"
+"2","
+Attaching package: ‘gridExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    combine
+
+"
+"0","library(ROCR)"
+"2","Carregando pacotes exigidos: gplots
+"
+"2","package ‘gplots’ was built under R version 3.4.2"
+"2","
+Attaching package: ‘gplots’
+
+"
+"2","The following object is masked from ‘package:stats’:
+
+    lowess
+
+"
+"0","library(tabplot)"
+"2","package ‘tabplot’ was built under R version 3.4.2"
+"2","Carregando pacotes exigidos: bit
+"
+"2","package ‘bit’ was built under R version 3.4.1"
+"2","Attaching package bit
+"
+"2","package:bit (c) 2008-2012 Jens Oehlschlaegel (GPL-2)
+"
+"2","creators: bit bitwhich
+"
+"2","coercion: as.logical as.integer as.bit as.bitwhich which
+"
+"2","operator: ! & | xor != ==
+"
+"2","querying: print length any all min max range sum summary
+"
+"2","bit access: length<- [ [<- [[ [[<-
+"
+"2","for more help type ?bit
+"
+"2","
+Attaching package: ‘bit’
+
+"
+"2","The following object is masked from ‘package:base’:
+
+    xor
+
+"
+"2","Carregando pacotes exigidos: ff
+"
+"2","package ‘ff’ was built under R version 3.4.2"
+"2","Attaching package ff
+"
+"2","- getOption(""fftempdir"")==""C:/Users/FELIPE~1.CAR/AppData/Local/Temp/RtmpeOU8uF""
+
+"
+"2","- getOption(""ffextension"")==""ff""
+
+"
+"2","- getOption(""ffdrop"")==TRUE
+
+"
+"2","- getOption(""fffinonexit"")==TRUE
+
+"
+"2","- getOption(""ffpagesize"")==65536
+
+"
+"2","- getOption(""ffcaching"")==""mmnoflush""  -- consider ""ffeachflush"" if your system stalls on large writes
+
+"
+"2","- getOption(""ffbatchbytes"")==171190517.76 -- consider a different value for tuning your system
+
+"
+"2","- getOption(""ffmaxbytes"")==8559525888 -- consider a different value for tuning your system
+
+"
+"2","
+Attaching package: ‘ff’
+
+"
+"2","The following objects are masked from ‘package:bit’:
+
+    clone, clone.default, clone.list
+
+"
+"2","The following objects are masked from ‘package:utils’:
+
+    write.csv, write.csv2
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    is.factor, is.ordered
+
+"
+"2","Carregando pacotes exigidos: ffbase
+"
+"2","package ‘ffbase’ was built under R version 3.4.2"
+"2","
+Attaching package: ‘ffbase’
+
+"
+"2","The following objects are masked from ‘package:ff’:
+
+    [.ff, [.ffdf, [<-.ff, [<-.ffdf
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    %in%, table
+
+"
+"0","library(knitr)"
+"0","library(kableExtra)"
+"2","package ‘kableExtra’ was built under R version 3.4.2"
+"0","library(caret)"
+"2","package ‘caret’ was built under R version 3.4.1"
+"2","Carregando pacotes exigidos: lattice
+"
+"2","package ‘lattice’ was built under R version 3.4.1"
+"0","library(e1071)"
+"2","package ‘e1071’ was built under R version 3.4.2"
+"0","library(RSNNS)"
+"2","package ‘RSNNS’ was built under R version 3.4.2"
+"2","Carregando pacotes exigidos: Rcpp
+"
+"2","package ‘Rcpp’ was built under R version 3.4.2"
+"2","
+Attaching package: ‘RSNNS’
+
+"
+"2","The following objects are masked from ‘package:caret’:
+
+    confusionMatrix, train
+
+"

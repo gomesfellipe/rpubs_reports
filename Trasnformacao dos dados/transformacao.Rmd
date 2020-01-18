@@ -1,0 +1,179 @@
+---
+title: "Transfomação de dados"
+author: "Fellipe Gomes"
+date: "6 de outubro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+# Transformações
+
+É uma tarefa extremamente difícil dizer exatamente quando usar cada tipo de transformação. É um processo trabalhoso e que provavelmente precisará de bastante tentaiva e erro, porém aqui serão apresentadas algumas dicas.
+
+Lembre-se de sempre que transformar um atributo, confira os resultados.
+
+Na prática, teste as transformações e compare os resultados do modelo.
+
+## Dados:
+
+```{r,warning=F}
+dados=cars$dist
+
+summary(dados)
+
+ggplot(cars, aes(x=dist)) + 
+  geom_histogram(aes(y=..density..), colour="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") 
+
+shapiro.test(dados)
+
+```
+
+
+### Scale
+
+Divide cada valor pelo desvio padrão do atributo. 
+
+Pode ser útil para a implementação de algorítimos como K-NN e LQV pois algorítmos que calculam distâncias se beneficiam com essa transformação.
+
+Exemplo:
+
+```{r,warning=F}
+dp=sd(dados)
+
+dados_scale=as.data.frame(dados/dp)
+
+summary(dados_scale)
+
+ggplot(dados_scale, aes(x=dados_scale)) + 
+  geom_histogram(aes(y=..density..), colour="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") 
+
+shapiro.test(dados_scale[,1])
+```
+
+
+### Center
+
+Subtrai cada valor pela média do atributo
+
+Exemplo:
+
+```{r,warning=F}
+m=mean(dados)
+
+dados_center=as.data.frame(dados/m)
+
+summary(dados_center)
+
+ggplot(dados_center, aes(x=dados_center)) + 
+  geom_histogram(aes(y=..density..), colour="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") 
+
+shapiro.test(dados_center[,1])
+```
+
+### Standardize
+
+Combinação das transformações scale e center. Os atributos terão média igual a 0 e desvio padrão igual a 1. 
+
+Métodos de regressão como *linear regression*, *logístic regression* e *LDA* podem obter melhores resultados pois em geral, esses algorítmos assumem que as variáveis de entrada possuem distribuição normal.
+
+Também conhecido como z-score, é dado pela equação:
+
+$$
+Z =  \dfrac{X_i - Média(X)}{Desvio \ Padrão(X)}
+$$
+
+No R, temos a funcão *scale()*, veja:
+
+```{r,warning=F}
+
+dados_stand=as.data.frame(scale(dados))
+
+summary(dados_center)
+
+ggplot(dados_stand, aes(x=dados_stand)) + 
+  geom_histogram(aes(y=..density..), colour="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") 
+
+
+shapiro.test(dados_center[,1])
+
+```
+
+
+### Normalize
+
+Transforma os dados em um range de 0 a 1.
+
+Algorítmos que atribuem peso às variáveis (como redes neurais, por exemplo) costumam ser mais efetivos com atributos transformados assim.
+
+$$
+X_n = \dfrac{(X-X_{mín})}{X_{máx}-X_{mín}}
+$$
+
+No R:
+
+```{r,warning=F}
+
+dados_normalize=as.data.frame( (dados-min(dados))/(max(dados)-min(dados))    )
+
+summary(dados_normalize)
+
+ggplot(dados_normalize, aes(x=dados_normalize)) + 
+  geom_histogram(aes(y=..density..),bins=10, colour="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") 
+
+
+shapiro.test(dados_normalize[,1])
+
+```
+
+### Box-Cox
+
+Quando um atributo tem a aparência de uma curva normal mas está deslocado para a direita ou para a esquerda, nos referimos à esta característica como skew. Este deslocamento pode ser ajustado para que o atributo se pareça mais com uma distribuição Normal.
+
+Box-Cox nos permite realizar esta transformação, porém assume que todos os valores são positivos.
+
+Consiste em transformar os dados de acordo com a expressão:
+
+$$
+y' = \dfrac{y^\lambda -1}{\lambda}
+$$
+onde $\lambda$ é um parâmetro a ser estimado dos dados. Se $\lambda=0$, temos:
+
+$$
+y' = ln(y)
+$$
+
+No R:
+
+```{r,warning=F}
+#Primeiramente vejamos um valor para lambda:
+require(MASS)
+boxcox(dist~speed,data=cars, plotit=T, lam=seq(-1, 1, 1/10))
+
+#O gráfico mostra que a função que maximiza a função é aproximadamente 0.5, logo:
+dados_boxcox=((dados^(0.5))-1)/0.5
+
+summary(dados_boxcox)
+dados_boxcox=as.data.frame(dados_boxcox)
+ggplot(dados_boxcox, aes(x=dados_boxcox)) + 
+  geom_histogram(aes(y=..density..),bins=10, colour="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") 
+
+shapiro.test(dados_boxcox[,1])
+
+```
+
+### Principal Component Analysis (PCA)
+
+Resumidamente, plotamos os dados em um novo plano com novos eixos, conhecidos como componentes principais. A ideia é que estes componentes expliquem a maior variabilidade dos dados. Esta transformação pode ser útil para algorítimos como *linear* ou *generalized linear regression*
+
+Mais informações podem ser encontradas em outro artigo já escrito [aqui](https://rpubs.com/gomes555/analise_fatorial)
+

@@ -1,0 +1,415 @@
+---
+title: "Análise de Componentes Principais"
+author: "Fellipe Gomes"
+date: "19 de fevereiro de 2018"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r,warning=F,echo=F,include=F}
+# library(readxl)
+# dados1 <- read_excel("~/Projeto Estagio/pesquisa satisfacao/1-Base 13.xls",sheet = "Dados")
+# dados2 <- read_excel("~/Projeto Estagio/pesquisa satisfacao/2-Base 10.xls",sheet = "Dados")
+# dados3 <- read_excel("~/Projeto Estagio/pesquisa satisfacao/3-Base 35.xls",sheet = "Dados")
+# temp1=as.data.frame(dados1[,-1]) #Retirando primeira coluna de nomes
+# temp2=as.data.frame(dados2[,-1]) #Retirando primeira coluna de nomes
+# temp3=as.data.frame(dados3[,-1]) #Retirando primeira coluna de nomes
+
+library(readr)
+library(readxl)
+library(stringr)
+dados <- read_delim("dados_simples2.txt", 
+                    ";", escape_double = FALSE, trim_ws = TRUE)
+
+#Dados originais:
+dados=as.data.frame(dados[,-1])
+
+#Simulando os dados:
+temp2=matrix(0,nrow=99,ncol=ncol(dados))
+temp2=as.data.frame(temp2)
+for(i in 1:ncol(temp2)){
+temp2[,i]=temp2[,i]=sample(c(06.6667,3.3333,10),replace=T,size = 99)
+}
+names(temp2)=str_c(str_sub(names(dados), end = 6),"_",str_sub(names(dados), start = -7))
+
+#Simulando os dados:
+temp1=matrix(0,nrow=99,ncol=ncol(dados))
+temp1=as.data.frame(temp1)
+for(i in 1:ncol(temp1)){
+temp1[,i]=temp1[,i]=sample(c(06.6667,3.3333,10),replace=T,size = 99)
+}
+names(temp1)=str_c(str_sub(names(dados), end = 6),"_",str_sub(names(dados), start = -7))
+
+#Simulando os dados:
+temp3=matrix(0,nrow=99,ncol=ncol(dados))
+temp3=as.data.frame(temp3)
+for(i in 1:ncol(temp3)){
+temp3[,i]=temp3[,i]=sample(c(06.6667,3.3333,10),replace=T,size = 99)
+}
+names(temp3)=str_c(str_sub(names(dados), end = 6),"_",str_sub(names(dados), start = -7))
+```
+
+# O que foi feito?
+
+Esta é uma nova versão da primeira análise de componentes principais que foi realizada no dia 01/02 (também foi documentada no RPubs [neste link](http://rpubs.com/gomes555/satisfacao_pca)) para novos dados de pesquisa de satisfação.
+
+Desta vez foram utilizados 3 bases diferentes e após suas componentes principais serem calculadas também foi conferido se existia algum tipo de correlação entre elas.
+
+Como o objetivo deste trabalho foi o de gerar gráficos para a visualização dos resultados de análise de componentes principais (PCA) e a interpretação foi feita em outro relatório, então os dados utilizados na apresentação deste documento foram simulados de maneira aleatória. 
+
+Mais informações sobre análise multivariada podem ser obtidas no [post no meu blog que falo sobre análise multivariada com R](https://gomesfellipe.github.io/post/2018-01-01-analise-multivariada-em-r/an%C3%A1lise-multivariada-em-r/)
+
+#Saída da funcao prcomp
+
+prcomp() | princomp() | Descrição
+-------- | -----------| -----------
+sdev     | sdev       | Desvios-padrão dos principais componentes
+rotation | loadings   | A matriz de loadinds (carregamentos) das variáveis (as colunas são eigenvectors)
+center   | center     | A variável means (significa que foram resgatados)
+scale    | scale      | Escala aplicada a cada variável
+x        | scores     | As coordenadas dos indivíduos (observações) nos componentes principais 
+
+## Executando a funcao
+
+```{r,warning=F}
+acpcor1=prcomp(temp1, scale = TRUE)
+acpcor2=prcomp(temp2, scale = TRUE)
+acpcor3=prcomp(temp3, scale = TRUE)
+```
+
+RESULTADOS DA BASE 1
+========================
+
+Resultados da funcao prcomp {.tabset}
+----------------------------------
+
+### sdev
+
+```{r,warning=F}
+acpcor1$sdev
+```
+### rotation
+
+```{r,warning=F}
+acpcor1$rotation
+```
+
+### center
+
+```{r,warning=F}
+acpcor1$center
+```
+
+### scale
+
+```{r,warning=F}
+acpcor1$scale
+```
+
+### x
+
+```{r,warning=F}
+acpcor1$x
+```
+
+### summary
+
+```{r,warning=F}
+summary(acpcor1)
+```
+
+Visualizacao: {.tabset}
+-------------------
+
+```{r,warning=F}
+suppressMessages(library(ggplot2)) 
+suppressMessages(library(ggfortify))
+suppressMessages(library(factoextra))
+```
+
+### Gráfico screeplot Estático 1
+
+```{r,warning=F}
+g11=fviz_eig(acpcor1);g11
+```
+
+### Gráfico screeplot Estático 2
+
+```{r,echo=F}
+ggscreeplot <- function(pcobj, type = c('pev', 'cev')) 
+{
+  type <- match.arg(type)
+  d <- pcobj$sdev^2
+  yvar <- switch(type, 
+                 pev = d / sum(d), 
+                 cev = cumsum(d) / sum(d))
+  
+  yvar.lab <- switch(type,
+                     pev = 'proportion of explained variance',
+                     cev = 'cumulative proportion of explained variance')
+  
+  df <- data.frame(PC = 1:length(d), yvar = yvar)
+  
+  ggplot(data = df, aes(x = PC, y = yvar)) + 
+    xlab('principal component number') + ylab(yvar.lab) +
+    geom_point() + geom_path()
+}
+```
+
+```{r}
+g11=ggscreeplot(acpcor1);g11
+```
+
+### Gráfico screeplot Interativo
+
+```{r,warning=F}
+plotly::ggplotly(g11)
+```
+
+### Gráfico PCA estático:
+
+```{r,warning=F}
+g21=fviz_pca_biplot(acpcor1, repel = TRUE,
+                col.var = "#2E9FDF", # Variables color
+                col.ind = "#696969"  # Individuals color
+                );g21
+```
+
+### Gráfico PCA interativo:
+
+```{r,warning=F}
+g11=autoplot(acpcor1, label = TRUE, label.size = 1,
+                   loadings = TRUE, loadings.label = TRUE, loadings.label.size  = 3)
+plotly::ggplotly(g11)
+```
+
+RESULTADOS DA BASE 2
+========================
+
+Resultados da funcao prcomp {.tabset}
+----------------------------------
+
+### sdev
+
+```{r,warning=F}
+acpcor2$sdev
+```
+### rotation
+
+```{r,warning=F}
+acpcor2$rotation
+```
+
+### center
+
+```{r,warning=F}
+acpcor2$center
+```
+
+### scale
+
+```{r,warning=F}
+acpcor2$scale
+```
+
+### x
+
+```{r,warning=F}
+acpcor2$x
+```
+
+### summary
+
+```{r,warning=F}
+summary(acpcor2)
+```
+
+Visualizacao: {.tabset}
+-------------------
+
+```{r,warning=F}
+suppressMessages(library(ggplot2)) 
+suppressMessages(library(ggfortify))
+suppressMessages(library(factoextra))
+```
+
+### Gráfico screeplot Estático 1
+
+```{r,warning=F}
+g11=fviz_eig(acpcor2);g11
+```
+
+### Gráfico screeplot Estático 2
+
+```{r,echo=F}
+ggscreeplot <- function(pcobj, type = c('pev', 'cev')) 
+{
+  type <- match.arg(type)
+  d <- pcobj$sdev^2
+  yvar <- switch(type, 
+                 pev = d / sum(d), 
+                 cev = cumsum(d) / sum(d))
+  
+  yvar.lab <- switch(type,
+                     pev = 'proportion of explained variance',
+                     cev = 'cumulative proportion of explained variance')
+  
+  df <- data.frame(PC = 1:length(d), yvar = yvar)
+  
+  ggplot(data = df, aes(x = PC, y = yvar)) + 
+    xlab('principal component number') + ylab(yvar.lab) +
+    geom_point() + geom_path()
+}
+```
+
+```{r}
+g11=ggscreeplot(acpcor2);g11
+```
+
+### Gráfico screeplot Interativo
+
+```{r,warning=F}
+plotly::ggplotly(g11)
+```
+
+### Gráfico PCA estático:
+
+```{r,warning=F}
+g21=fviz_pca_biplot(acpcor2, repel = TRUE,
+                col.var = "#2E9FDF", # Variables color
+                col.ind = "#696969"  # Individuals color
+                );g21
+```
+
+### Gráfico PCA interativo:
+
+```{r,warning=F}
+g11=autoplot(acpcor2, label = TRUE, label.size = 1,
+                   loadings = TRUE, loadings.label = TRUE, loadings.label.size  = 3)
+plotly::ggplotly(g11)
+```
+
+RESULTADOS DA BASE 3
+========================
+
+Resultados da funcao prcomp {.tabset}
+----------------------------------
+
+### sdev
+
+```{r,warning=F}
+acpcor3$sdev
+```
+### rotation
+
+```{r,warning=F}
+acpcor3$rotation
+```
+
+### center
+
+```{r,warning=F}
+acpcor3$center
+```
+
+### scale
+
+```{r,warning=F}
+acpcor3$scale
+```
+
+### x
+
+```{r,warning=F}
+acpcor3$x
+```
+
+### summary
+
+```{r,warning=F}
+summary(acpcor3)
+```
+
+Visualizacao: {.tabset}
+-------------------
+
+```{r,warning=F}
+suppressMessages(library(ggplot2)) 
+suppressMessages(library(ggfortify))
+suppressMessages(library(factoextra))
+```
+
+### Gráfico screeplot Estático 1
+
+```{r,warning=F}
+g11=fviz_eig(acpcor3);g11
+```
+
+### Gráfico screeplot Estático 2
+
+```{r,echo=F}
+ggscreeplot <- function(pcobj, type = c('pev', 'cev')) 
+{
+  type <- match.arg(type)
+  d <- pcobj$sdev^2
+  yvar <- switch(type, 
+                 pev = d / sum(d), 
+                 cev = cumsum(d) / sum(d))
+  
+  yvar.lab <- switch(type,
+                     pev = 'proportion of explained variance',
+                     cev = 'cumulative proportion of explained variance')
+  
+  df <- data.frame(PC = 1:length(d), yvar = yvar)
+  
+  ggplot(data = df, aes(x = PC, y = yvar)) + 
+    xlab('principal component number') + ylab(yvar.lab) +
+    geom_point() + geom_path()
+}
+```
+
+```{r}
+g11=ggscreeplot(acpcor3);g11
+```
+
+### Gráfico screeplot Interativo
+
+```{r,warning=F}
+plotly::ggplotly(g11)
+```
+
+### Gráfico PCA estático:
+
+```{r,warning=F}
+g21=fviz_pca_biplot(acpcor3, repel = TRUE,
+                col.var = "#2E9FDF", # Variables color
+                col.ind = "#696969"  # Individuals color
+                );g21
+```
+
+### Gráfico PCA interativo:
+
+```{r,warning=F}
+g11=autoplot(acpcor3, label = TRUE, label.size = 1,
+                   loadings = TRUE, loadings.label = TRUE, loadings.label.size  = 3)
+plotly::ggplotly(g11)
+```
+
+# Correlações
+
+```{r}
+d=data.frame(
+base1=acpcor1$x[,1],
+base2=acpcor2$x[,1],
+base3=acpcor3$x[,1]
+)
+cor(d,method = "spearman")
+```
+

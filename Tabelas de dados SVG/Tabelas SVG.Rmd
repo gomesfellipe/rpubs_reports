@@ -1,0 +1,147 @@
+---
+title: "Tabelas SVG"
+author: "Fellipe Gomes"
+date: "30 de outubro de 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<!-- TAGS: Plotly, R, svg, tables -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Criando tabelas SVG em R
+
+Primeiramente deve-se instalar o pacote para que seja possível produzir as tabelas:
+
+```{r}
+library(devtools)
+#install_github("ropensci/plotly")
+ 
+library(plotly)
+ 
+p <- plot_ly(
+  type = 'table',  # Especifica que o plot é uma tabela
+  
+  # cabeçalho é uma lista e cada parâmetro mostrado abaixo precisa
+  # a definir. Observe que as tags html também podem ser usadas.
+  
+  header = list(
+    
+   # Primeiro, especifique cabeçalhos de tabela
+   # Observe o anexo dentro da "lista"
+    
+    values = list(list('<b>EXPENSES</b>'),
+                  list('<b>Q1</b>'),
+                  list('<b>Q2</b>'), 
+                  list('<b>Q3</b>'), 
+                  list('<b>Q4</b>')),
+    
+    # Formatação
+    line = list(color = '#DFE8F3'),
+    align = c('left','left','left','left','left'),
+    font = list(color = c('#506784', '#506784', '#506784', '#506784', '#ab63fa'), size = 14)
+  ),
+  
+  # Especifique células individuais
+  
+  cells = list(
+    
+    # Agora especifique cada conteúdo celular
+    
+    values = list(
+      c('Salaries', 'Office', 'Merchandise', 'Legal', '<b>TOTAL</b>'),
+      c(1200000, 20000, 80000, 2000, 12120000),
+      c(1300000, 20000, 70000, 2000, 130902000),
+      c(1300000, 20000, 120000, 2000, 131222000),
+      c(1400000, 20000, 90000, 2000, 14102000)),
+    
+    # Formatação
+    line = list(color = '#DFE8F3'),
+    align = c('left', 'left', 'left', 'left', 'left'),
+    font = list(color = c('#506784', '#506784', '#506784', '#506784', '#ab63fa'), size = 14),
+    height = 48
+    )) %>% 
+  
+  # Layout é necessário para remover linhas de grade, linhas de eixo zero e texto de marcação
+ # ou então eles também aparecerão
+  
+  layout(xaxis = list(zeroline = F, showgrid = F, showticklabels = F, domain = c(0, 0.5)),yaxis = list(zeroline = F, showgrid = F, showticklabels = F))
+ 
+p
+```
+
+Podemos também escrever uma função auxiliar para criar essas tabelas usando dataframes.
+
+```{r}
+library(plotly)
+ 
+createTable <- function(df, tableHeight = 50){
+  
+  # Crie os parâmetros de valor
+  # Cabeçalhos
+  nms <- lapply(names(df), function(x){
+    return(paste0("<b>", x, "</b>"))    
+  })
+  
+  nms <- append(nms, "<b>Rows</b>", after = 0)
+  headerValues <- lapply(nms, function(x){return(list(x))})
+  
+  # Valores da célula
+  names(df) <- NULL
+  cellValues <- apply(df, 2, function(x){return(list(x))})
+  cellValues <- lapply(cellValues, function(x){return(unlist(x))})
+  
+  cellValues <- append(cellValues, list(rownames(df)), after = 0)
+  
+  # Crie a lista para passar para plot_ly()
+  header <- list(
+    values = headerValues, 
+    
+    # Formatação 
+    line = list(color = '#DFE8F3'),
+    align = c('left', rep('center', ncol(df))),
+    font = list(color = '#ffffff', size = 16),
+    fill = list(color = '#999999')
+  )
+  
+  cells <- list(
+    values = cellValues,
+    
+    # Formatação
+    line = list(color = '#DFE8F3'),
+    align = c('left', rep('right', ncol(df))),
+    font = list(color = c('#262626'), size = 14),
+    fill = list(color = c("#d9d9d9", rep("#ffe6cc", ncol(df)))),
+    height = tableHeight
+  )
+  
+  # Cria a tabela com plotly
+  p <- plot_ly(
+    type = "table",
+    header = header,
+    cells = cells,
+    width = 1200, 
+    height = 1600) %>% 
+    
+    layout(xaxis = list(zeroline = F, showgrid = F, showticklabels = F),
+           yaxis = list(zeroline = F, showgrid = F, showticklabels = F))
+  
+  return(p)
+}
+ 
+p <- createTable(mtcars)
+p
+```
+
+
+
+
+```{r}
+
+```
+

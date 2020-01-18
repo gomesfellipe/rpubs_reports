@@ -1,0 +1,874 @@
+---
+title: "Semest 2017"
+author: "Fellipe Gomes"
+date: "23 a 26 de outubro de 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+---
+
+# Dia 23 de outubro de 2017
+
+## PAL-1: Demografia: Um estudo de caso da aplicação estatística
+
+Nesta palestra falou-se sobre a importancia dos estudos demográficos e também sobre o momento de transição demográfica que o Brasil está passando. Esta mudança é caracterizada por uma diminuição do ritmo do crescimento da população e mudançasna estrutura estária no sentido do evelhecimento da população.
+
+Foram apresentados indicadores que mostram efeitos dessa transição demográfica no mercado de trabalho e previdência social (economia), na saúde, educação, aspectos sociais etc..
+
+Também foi apresentado o método de componentes demográficas para projetar populações com a conhecida equação compensadora oouo equação de equilíbrio populacional cuja expressão analítica é descrita da seguinte forma:
+
+$$
+P(t+n)=P(t)+B(t,t+n)+I(t,t+n)-E(t,t+n)
+$$
+onde:
+
+  * $P(t+n)$: População no ano t+n,
+  * $P(t)$: População no ano t,
+  * $B(t,t+n)$: nascimentos ocorridos no período t,t+n
+  * $D(t,t+n)$: óbitos ocorridos no período t,t+n
+  * $I(t,t+n)$: imigrantes ocorridos no período t,t+n
+  * $E(t,t+n)$: emigrantes ocorridos no período t,t+n
+  * t= momento inicial da projeção 
+  * n=intervalo projetado
+
+## PAL-2: Big Data e Machine Learning: Uma abordagem SAS Viya
+
+### Hadoop
+
+Hadoop é capaz de armazenar qualquer tipo de dado no seu formato nativo e realizar, em escala, uma variedade de análises e transformações sobre esses dados. Com uma grande vantagem: baixo custo, já que é um software de código aberto que roda em hardware comum.
+
+Capaz de:
+
+* Análises mais rápidas pois o computador "pensa" de maneira diferente
+* Fazer mais com menos
+
+O Hadoop é uma plataforma de computação distribuída que oferece dois serviços importantes: 
+
+  * HDFS = capacidade de armazenamento distribuído
+  * MAP REDUCE = computação distribuída
+  
+
+
+E com a ferramenta SAS Viya é possível fazer todo tipo de análise, ele é aberto para o Cloud e sua arquitetura unificada alivia a necessidade de ligar códigos de diferentes fornecedores juntos, é acessível em linguagens de programação populares como R e Python além de acesso às APIs públicas.
+
+Algo como:
+
+![*Imagem ilustrativa*](C:/Users/felipe.carvalho/Desktop/Apresentacao/sas.png)
+
+> R no SAS:
+
+Obs: Para fazer o uso da linguagem R dentro do SAS basta utilizar os seguintes comandos:
+
+
+
+```{r, eval=F}
+submit / R;
+
+(...)
+
+endsubmit;
+```
+
+### Machine Learning
+  
+Com essa maneira de se **armazenar**, **processar** os dados e bastante **criatividade**, nos deparamos com tendencias para:
+
+  * Machine Learning
+      * Conjunto de técnicas com o objetivo de encontrar padrões para fazer previsões do futuro
+  * Internet das coisas IOT
+      * Muitos dispositivos conectados à internet, gerando dados a todo instante
+  * Inteligencia Artificial
+      * Dar ao computador a capacidade de fazer o que nós fazemos
+      
+![*Alguns algorítmos de Machine Learning*](C:/Users/felipe.carvalho/Desktop/Apresentacao/muitos_algoritimos.png)
+
+Já existem diversos pacotes para implementação dos algorítimos. Alguns pacotes como [caret](https://cran.r-project.org/web/packages/caret/index.html) ou o [h2o](https://cran.r-project.org/web/packages/h2o/index.html),  que possuem grande variedade de aplicações para machine learning e estão sendo atualizados constantemente.
+
+> E quais seriam as diferenças entre os métodos de Machine Learning e os métodos Estatísticos?
+
+Machine Learning | Estatística
+------------- | -------------
+Caixa preta | Caixa branca
+Orientado ao resutlado| Inferencial
+Supervisionado | Regressão
+Não Supervisionado | Clusterização
+
+Portanto, a ciencia de dados nada mais é do que a estatística com criatividade. Os algorítmos são mais voltados para a tomada de decisão mais acurada.
+
+---
+
+# Dia 24 de outubro de 2017
+
+<!-- ## PAL-3 UMA ANÁLISE DE ESCOLHA E CURSO SUPERIOR -->
+
+## PAL-4: Ciencia de dados e Big Data
+
+Além do Hadoop, existem outras opções para armazenar e processar os dados em um contexto de Big Data. No minicurso será abordado o [ELK Stack](https://www.elastic.co/webinars/introduction-elk-stack) da [Elastic](https://www.elastic.co/).
+
+Por hora, vejamos os conteúdos que foram apresentados na palestra.
+
+### Big data
+
+#### GPU
+
+Primeiramente falou-se sobre a capacidade de processamento de um computador caseiro, que é muito pouco utilizado. Investir em memória RAM (GPU) para resolver problemas paralelizáveis pode ser um opção interessante para acelerar processos que permitem a paralelização. 
+
+Foi apresentada a [VirtualBox](https://www.virtualbox.org/) que é capaz de emular um novo computador dentro de um computador, distribuíndo o uso da memória RAM disponível. Esta pode ser uma opção interessante quando deseja-se rodar programas simultaneamente distribuindo o uso de GPU.
+
+Além de ser uma boa opção para distribuir o uso do computador, foi levantada a questão "Para que serve a caixa de areia do gato?". Portanto, utilizar a [VirtualBox](https://www.virtualbox.org/) pode ser uma opção para manter a de forma isolada tentativas arriscadas de testar diferentes abordagens. 
+
+#### paper.li
+
+O site [paper.li](https://paper.li/) permite que o usuário crie um "jornal" com as notícias do Twitter e também do facebook. Além de ser uma ótima ferramenta para acompanhar assuntos de interesse, com as ferramentas de coleta de dados apresentadas na [semest](http://www.semest.uff.br/) pode ser uma ferramenta útil para reunir informações para serem extraídas em conjunto
+
+### Ciencia de dados
+
+A seguir, alguns dos *hacks* apresenados e recomendados durante a palestra como ferramenta para ciencia de dados utilizando o R.
+
+#### Shiny
+
+O projeto [Shiny](https://shiny.rstudio.com/) é um framework para aplicações web, criado pela equipe do [RStudio](https://www.rstudio.com/), e feito especificamente para a liguagem R. 
+
+![*Enviar dados do cliente para o servidor e voltar usando shiny*](C:/Users/felipe.carvalho/Desktop/Apresentacao/shiny2.png)
+
+Permite que o usuário do R crie apps web, utilizando somente a própria linguagem R, diminuíndo a sobrecarca do usuário, tal que possa desenvolver e rodas suas aplicações localmente de forma muito simples com um comando como runAPP().
+
+Veja um exemplo retirado deste [link](https://www.analyticsvidhya.com/blog/2016/10/creating-interactive-data-visualization-using-shiny-app-in-r-with-examples/) de como funciona a elaboração de um aplicativo simples:
+
+
+```{r Exemplo de código , eval=F}
+#UI.R
+#loading shiny library
+library(shiny)
+
+shinyUI(fluidPage(
+
+#fluid page for dynamically adapting to screens of different resolutions.
+  titlePanel("Iris Dataset"),
+  sidebarLayout(
+    sidebarPanel(
+      #implementing radio buttons
+      radioButtons("p", "Select column of iris dataset:",
+                   list("Sepal.Length"='a', "Sepal.Width"='b', "Petal.Length"='c', "Petal.Width"='d')),
+
+#slider input for bins of histogram
+      sliderInput("bins",
+                  "Number of bins:",
+                  min = 1,
+                  max = 50,
+                  value = 30)
+
+# Show a plot of the generated distribution
+    ),
+    mainPanel(
+      plotOutput("distPlot")
+     )
+  )
+))
+```
+
+Resulta em:
+
+![*Exemplo de app web*](C:/Users/felipe.carvalho/Desktop/Apresentacao/shinyexemplo2.png)
+
+Portanto, acessando [http://www.shinyapps.io/](http://www.shinyapps.io/) é possível criar um login e iniciar o uso do aplicativo.
+
+Como exemplo, o palestrante deixou o seguinte código para a instalação do pacote e utilizar seu aplicativo:
+
+```{r, eval=F}
+install.packages('rsconnect')
+rsconnect::setAccountInfo(name='cerceau',
+                          token='CE597237EE030814F74C59DEF8F393E4',
+                          secret='fisWfUngcgYWmwceMg3oeYtBFWbwbcvezrTYIHr6')
+```
+
+O palestrante deixou também o seguinte [link do tutorial de instalação](http://shiny.rstudio.com/articles/shinyapps.html) para auxiliar na instalação.
+
+Diversos links como o Shiny User Showcase, que contém um conjunto inspirador de aplicativos sofisticados desenvolvidos e contribuídos pelos usuários, podem ser encontrados na web para auxiliar no começo das aplicações, veja uma lista com alguns dos links encontrados:
+
+  * [Galery Shiny User Showcase ](https://shiny.rstudio.com/gallery/)
+
+  * [Adicionar widgets](http://shiny.rstudio.com/gallery/widget-gallery.html)
+
+  * [Tutorial de shiny do Rstudio em vídeo](http://shiny.rstudio.com/tutorial/)
+
+  * [Tutorial de shiny do Rstudio no github com exemplos](http://rstudio.github.io/shiny/tutorial/#hello-shiny)
+
+  * [Curso-r Aula 10 Shiny](http://curso-r.github.io/posts/aula10.html)
+
+
+Após instalado, podemos conferir um exemplo de aplicação como foi apresentado pelo palestrante através dos comandos:
+
+```{r, eval=F}
+library(rsconnect)
+rsconnect::deployApp('path/to/your/app')
+```
+
+#### Radiant
+
+Descrições traduzidas do [site oficial](http://vnijs.github.io/radiant/):
+
+Radiant é uma interface baseada em navegador independente de plataforma aberta para análise de negócios em R. 
+
+O aplicativo é baseado no pacote Shiny e pode ser executado localmente ou em um servidor.
+
+Características principais
+
+  * Explore: resumir, visualizar e analisar rapidamente seus dados de forma rápida e fácil
+  * Cross-platform: ele é executado em um navegador no Windows, Mac e Linux
+  * Reproduzível: Recrie resultados e compartilhe o trabalho com outros como um arquivo de estado ou um relatório Rmarkdown
+  * Programação: Integre as funções de análise da Radiant com seu próprio código R
+  * Contexto: dados e exemplos focados em aplicativos de negócios
+
+Radiant concentra-se em dados e decisões empresariais. Ele oferece ferramentas, exemplos e documentação relevantes para esse contexto, reduzindo efetivamente a curva de aprendizado de análise de negócios.
+
+Portanto, Radiant é uma ferramenta para Business analytics utilizando R e shiny, pode ser conferida no site oficial [http://vnijs.github.io/radiant/](http://vnijs.github.io/radiant/).
+
+Para rodar o aplicativo com um exemplo, considere as seguintes linhas de codigo:
+
+```{r, eval=F}
+# 1. instale o pacote no R
+install.packages("radiant",
+                 repos="https://radiant-rstats.github.io/minicran/",
+                 type = 'binary')
+# 2. digite o seguinte comando no terminal do R:
+radiant::radiant()
+```
+
+Através destes comandos, um exemplo do aplicativo já será aberto na web como ilustra a figura:
+
+![Exemplo de uso do Radiant com os dados "diamonds" nativos do R](C:/Users/felipe.carvalho/Desktop/Apresentacao/radiant.png)
+
+#### DADOS DE MORTALIDADE E MORBIDADE DO SUS + RSTUDIO (para testar online)
+1. entre no site: https://bigdata.icict.fiocruz.br/
+2. entre no 'acesse a plataforma
+3. faça seu cadastro para passar a usar a plataforma!!
+   
+**ps**. para consultar dados basta utilizar o link 'galeria visual de dados'
+
+#### Pacotes para R
+
+![](C:/Users/felipe.carvalho/Desktop/Apresentacao/pacotesR.png)
+
+Alguns pacotes foram apresentados com a finalidade facilitar ainda mais a experiencia com manipulação de dados no R. 
+
+> library(parallel)
+
+De acordo com Samatova [Samatova et al. 2006], o pacote parallel pode
+fornecer uma capacidade computacional paralela transparente para o usuário. Por
+meio do parallel o usuário pode configurar o ambiente paralelo, distribuir dados e
+realizar a computação paralela necessária mas mantendo a mesma interface lookand-
+feel do sistema R. Mais informações sobre o pacote podem ser conferidas neste [artigo](http://www.lbd.dcc.ufmg.br/colecoes/erad/2017/003.pdf) e no [manual](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf) do pacote.
+
+> library(stringi) e library(stringr)
+
+Um pacote para a manipular strings ou corrigir codificações, vejamos alguns exemplos de funcionalidades oferecidos nos pacotes:
+
+
+```{r, eval=F}
+library(stringi)
+
+#Retorna o número de caracteres de cada string
+str_length()
+
+#Converte string para minuscula
+str_to_lower(s)
+#Converte string para maiuscula
+str_to_upper(s)
+#Converte string para nome título
+str_to_title(s)
+
+#Encontrar textos que vêm com espaços a mais
+str_trim
+
+#Retorna apenas a parte final da string:
+str_sub(s, start = 4)        #pegar do quarto até o último caractere
+str_sub(s, end = 2)          #pegar apenas os dois 
+
+#Para corrigir a codificação:
+str_enc_detect()             #Detecta qual a codificação da string
+iconv()                      #Converte a string para a codificação desejada
+
+```
+
+Para mais opções, consultar [material de apoio curso-R](http://material.curso-r.com/stringr/#conceitos-básicos)
+
+> library(XML) e library(RCurl)
+
+Pacote necessário para recolher informações não estruturadas da internet
+
+mais informações em [link](https://rpubs.com/adriano/dadosImpP1)
+
+```{r, eval=F}
+library("RCurl")
+library("XML")
+
+conexao<-url("https://pt.wikipedia.org/wiki/Dataprev")
+linhas_pagina <- readLines(conexao)
+
+linhas_pagina
+
+pagetree <- htmlTreeParse(linhas_pagina, error=function(...){})
+body <- pagetree$children$html$children$body 
+
+library(RCurl)
+library(XML)
+
+# Download de página da web utilizando RCurl
+# Você pode precisar definir detalhes do proxy, etc., na chamada para getURL
+theurl <- "https://pt.wikipedia.org/wiki/Dataprev"
+webpage <- getURL(theurl)
+# Processo para obtenção dos caracteres
+webpage <- readLines(tc <- textConnection(webpage)); close(tc)
+
+# Analise a árvore html, ignorando erros na página
+pagetree <- htmlTreeParse(webpage, error=function(...){})
+
+# Navegue pelo caminho pela árvore. Pode ser possível fazer isso de forma mais eficiente usando getNodeSet
+body <- pagetree$children$html$children$body 
+divbodyContent <- body$children$div$children[[1]]$children$div$children[[4]]
+tables <- divbodyContent$children[names(divbodyContent)=="table"]
+
+#Neste caso, a tabela necessária é a única com a classe "wikitable sortable"  
+tableclasses <- sapply(tables, function(x) x$attributes["class"])
+thetable  <- tables[which(tableclasses=="wikitable sortable")]$table
+
+#Obter cabeçalhos de colunas
+headers <- thetable$children[[1]]$children
+columnnames <- unname(sapply(headers, function(x) x$children$text$value))
+
+# Obter linhas da tabela
+content <- c()
+for(i in 2:length(thetable$children))
+{
+   tablerow <- thetable$children[[i]]$children
+   opponent <- tablerow[[1]]$children[[2]]$children$text$value
+   others <- unname(sapply(tablerow[-1], function(x) x$children$text$value)) 
+   content <- rbind(content, c(opponent, others))
+}
+
+# Converter para data frame
+colnames(content) <- columnnames
+as.data.frame(content)
+
+#----------------------------------------------
+
+# Outra opção:
+
+library(rvest)
+theurl <- "https://pt.wikipedia.org/wiki/Dataprev"
+file<-read_html(theurl)
+tables<-html_nodes(file, "table")
+table1 <- html_table(tables[4], fill = TRUE)
+
+#--------------------------------
+
+# Mais uma opção:
+
+require(RCurl)
+require(XML)
+webpage <- getURL("http://www.haaretz.com/")
+webpage <- readLines(tc <- textConnection(webpage)); close(tc)
+pagetree <- htmlTreeParse(webpage, error=function(...){}, useInternalNodes = TRUE)
+# analise a árvore para tabelas
+x <- xpathSApply(pagetree, "//*/table", xmlValue)  
+# faça alguma limpeza com expressões regulares
+x <- unlist(strsplit(x, "\n"))
+x <- gsub("\t","",x)
+x <- sub("^[[:space:]]*(.*?)[[:space:]]*$", "\\1", x, perl=TRUE)
+x <- x[!(x %in% c("", "|"))]
+
+
+```
+
+> library(elastic)
+
+Pacote que permite a conexão com *Elasticsearch*, um  banco de dados *NoSQL*.
+
+Mais informações podem ser conferidas no [manual do pacote elastic](https://cran.r-project.org/web/packages/elastic/elastic.pdf).
+
+O uso também pode ser conferido nessa [página do Github](https://github.com/ropensci/elastic)
+
+> library(sparklyr)
+
+O Hadoop inclui um componente de armazenamento conhecido como o Hadoop Distributed File System, e também um componente de processamento chamado MapReduce, de modo que você não *precisa* do Spark para processamento. Por outro lado, você também *pode* usar o Spark sem o Hadoop.
+
+Como não conta com o seu próprio sistema de gerenciamento de arquivos, *precisa* ser integrado a um. Se não for o HDFS, então outra plataforma de dados baseada em cloud computing. Mas por ter sido projetado para o Hadoop, muitos concordam que ambos funcionam melhor juntos.
+
+O Spark é geralmente muito mais rápido que o MapReduce devido à forma como processa os dados. Enquanto o MapReduce opera em etapas, o Spark opera a partir de todo o conjunto de dados de um só vez.
+
+Pode não ser necessária toda a velocidade do Spark. O estilo de processamento do MapReduce pode ser suficiente se as operações de dados e requisitos de informação forem estáticos, em sua maioria e for possível esperar pelo processamento em lote. Quando se precisa fazer análise em fluxos contínuos de dados, como a partir de sensores em um chão de fábrica, ou ter aplicações que requerem múltiplas operações, neste caso provavelmente vai ser preferível o uso do Spark.
+
+
+## MIC-04 Experiencias interativas em Ciência de Dados
+
+### Stack ELK
+
+Neste minicurso foi apresentada a ferramenta [ELK Stack](https://www.elastic.co/webinars/introduction-elk-stack) (Elasticsearch, Logstash e Kibana) da [Elastic](https://www.elastic.co/). Esta ferramenta tem tido um uso bastante interessante pois com ela possível filtrar os logs de maneira muito mais eficiente, eliminando aquilo que não interessa e usando sua engine para decodificar os dados (XML, Multilines, netflow, json e outros) acessá-los em um único lugar e importar.
+
+Seu funcionamento é basicamente o seguinte: O Logstash recebe os logs de distintas fontes, realiza as transformações, normaliza e agrupa os mesmos, indexa no Elasticsearch, por fim, os dados podem ser visualizados no Kibana. Veja na ilustração:
+
+![[Como gerenciar logs com logstash](http://www.devmedia.com.br/elasticsearch-como-gerenciar-logs-com-logstash/32939)](C:/Users/felipe.carvalho/Desktop/Apresentacao/elk.png)
+
+Alguns dos benefícios do uso dessa ferramenta envolvem: disponibilizar dados em tempo real, podem ser distribuídos e configurados para apresentar alta disponibilidade, disponibiliza recursos de API dentre outros.
+
+Suas ferramentas possuem as seguintes funcionalidades:
+
+  * **[Elastic Search](https://www.elastic.co/products/elasticsearch)**: Um mecanismo de armazenamento e análise, elabora a indexação e possibilita a consulta dos dados, provendo real-time analytics. Possui outras características como escalabilidade, alta-disponibilidade, full text search dentre outros
+  * **[Logstach](https://www.elastic.co/products/logstash)**: Atua como um agente de coleta e transformação, faz a captura das informações em arquivos (csv, logs, etc), processa e gera o output para o Elasticsearch
+  * **[Kibana](https://www.elastic.co/products/kibana)**: É um dashboard Web para ajudar a visualizar os dados coletados. Tem como características a pesquisa e visualização através gráficos, trendlines, mapas, etc. Além disso permite a exportação de tabelas em csv para análises
+
+![*ELK STACK*](C:/Users/felipe.carvalho/Desktop/Apresentacao/elk2.png)
+
+Para conferir um demo, basta acessar este link: [http://demo.elastic.co](http://demo.elastic.co/)
+
+#### Já é de casa..
+
+Recebi um e-mail em outubro que dizia o seguinte:
+
+![*E-mail interno*](C:/Users/felipe.carvalho/Desktop/Apresentacao/elk3.png)
+
+O que sugere que existem pessoas cientes da stack ELK por aqui
+
+### Como utilizar
+
+#### Downloads
+
+O primeiro passo é baixar os três componentes da stack ELK na página oficial do site [https://www.elastic.co/downloads](https://www.elastic.co/downloads)
+
+#### Configurar Elasticsearch e Kibana
+
+Após isso, os arquivos devem ser executados da seguinte maneira através do propt de comando (ou entrando na respectiva pasta e abrindo os arquivos executáveis .bat) para realizar sua configuração:
+
+Configurando o Elasticsearch:
+
+  1. descompacte na pasta
+  2. entre em /bin
+  3. digite: elasticsearch
+	entre em: http://localhost:9200
+		
+Configurando o Kibana:
+
+  1. descompacte na pasta
+  2. entre em /bin
+  3. digite: kibana
+	entre em: http://localhost:5601
+	
+#### Configurar o Logstash
+	
+Para utilizar o Logstash, primeiramente alguns passos de configuração devem ser seguidos, veremos a seguir.
+
+(Neste exemplo não será utilizado, mas caso deseje baixar os plugins, acesse [https://www.elastic.co/guide/en/logstash/current/codec-plugins.html](https://www.elastic.co/guide/en/logstash/current/codec-plugins.html) )
+
+Obtendo acesso aos dados do Twitter:
+
+1. logar em https://dev.twitter.com/apps
+2. registre 'create an application' (Pode escolher qualquer nome para o aplicativo)
+    * name     : testeELASTIC
+    * descricao: http://testeELASTIC.com
+    * URL      : http://testeELASTIC.com
+3. abra 'consumer key > manage keys and access tokens'
+
+
+
+4. Copie os codigos 'consumer_key', consumer_secret' para o arquivo ['SEMEST2017.conf'](https://www.dropbox.com/s/xqfx6nddpa5owgl/SEMEST.conf?dl=0)
+5. Clique em 'Token Actions > Create my access token'
+6. Copie os codigos 'oauth_token', oauth_token_secret' para o arquivo 'SEMEST2017.config'
+7. Defina as palavras a serem procuradas (cada uma delas 'entre aspas' e com separação por vírgulas)
+8. Defina se prefere manter somente poucas informações (mantendo: 'full_tweet => false') ou substituir por recebimento de mais dados (full_tweet => true}})
+9. Defina nomes do 'index' e 'document_type' para armazenar os dados (escolha o nome que desejar) 
+10. Salve o arquivo 'SEMEST2017.conf' na pasta onde esta o '/logstash-5.6.3/bin'
+11. Entre o diretorio '/logstash-5.6.3/bin' e inicie a captura dos dados do TWITTER da seguinte maneira:
+    * digite no prompt de comandos: logstash -f SEMEST2017.conf
+12. Entre no 'kibana' e acrescente o index 'twitter*'
+13. Entre em 'discoverer', depois em 'visualize'
+
+**$Obs_1$**.: Caso pretenda filtrar os 'tweets', inclua conteúdo no filtro ('filter'); sugiro ver no google: 'logstash grok'
+
+**$Obs_2$**.: Interessante procurar mais informações sobre como se faz "mapping" e georeferenciamento
+
+**$Obs_3$**.: Existem pacotes que permitem interagir esse procedimento com o R, dois exemplos são:
+    * library(elastic)
+    * library(elasticsearch)
+
+Por fim, veja a seguir como será configurado o arquivo SEMEST.conf:
+
+```{r, eval=F}
+ input {twitter {
+	consumer_key => "9QHT4ZvO8zc4j5LvEdSirrbvq"
+	consumer_secret => "OQ0KwFAAQDfNZ36IFphIRpokIHiaWhgWOLV0P5lz3uFDgkTyMo"
+	oauth_token => "123143847-rSneIkB2D6fH4U4CwvP0p1B7IUV0rCx4UQ1TZzVq"
+	oauth_token_secret => "4UAIFv0Ylg3uh8WPkPYnUy3B2lprthudOiYTxv7HrEOKg"
+	keywords => [ "dataprev", "rj"]
+	full_tweet => false}}
+
+   filter { }
+
+   output {stdout {codec => dots}
+	elasticsearch {
+		hosts => "localhost"
+		index => "dataprev"
+			document_type => "tweets"}}
+```
+
+  
+**ATENCAO**: tem que ter celular registrado no twitter
+
+Para mais informações, alguns links para referência e consulta:
+
+  * [Curso na Udemy: "ElasticSearch, LogStash, Kibana ELK #1 - Learn ElasticSearch"](https://www.udemy.com/elasticsearch-logstash-kibana-learn-elasticsearch-search-server/?locale=pt_BR&persist_locale=)
+  * [Nao se afoguem mais em uma tonelada de Logs ELK te salva Real time pagina 1](https://www.vivaolinux.com.br/artigo/Nao-se-afoguem-mais-em-uma-tonelada-de-Logs-ELK-te-salva-Real-time)
+  * [Nao se afoguem mais em uma tonelada de Logs ELK te salva Real time pagina 2](https://www.vivaolinux.com.br/artigo/Nao-se-afoguem-mais-em-uma-tonelada-de-Logs-ELK-te-salva-Real-time?pagina=2)
+  * [https://www.elastic.co/learn](https://www.elastic.co/learn)
+  * [https://www.elastic.co/products](https://www.elastic.co/products)
+  * [Elasticsearch como gerenciar logs com logstash](http://www.devmedia.com.br/elasticsearch-como-gerenciar-logs-com-logstash/32939)
+  * [Iniciando com elasticsearch](https://tasafo.wordpress.com/2014/08/09/iniciando-com-elasticsearch/)
+
+
+
+---
+
+<!-- ## PAL-5 PESQUISAS AMOSTRAIS NAO PROBABILÍSTICAS NA ÁREA DE MARKETING -->
+
+# Dia 25 de outubro de 2017
+
+## PAL-6 SELEÇÃO ESTATÍSTICA DE ÁRVORES DE CONTEXTO A PARTIR DE DADOS DE EEG
+
+Nesta palestra falou-se sobre a conjectura de que "O cérebro atribui modelos estocásticos à amostras de estímulos".
+
+Este estudo da [CEPID NeuroMat ](http://neuromat.numec.prp.usp.br/pt-br) é feito através uma abordagem estatística baseada em uma nova classe de modelos e para essa classe, apresentado um novo procedimento para a seleção estatística de árvores de contextos a partir de dados funcionais.
+
+![](C:/Users/felipe.carvalho/Desktop/Apresentacao/neuromat1.png)
+
+
+O modelo de árvore de contextos (MAC) é uma cadeia estocastica com memória de alcance variável, foi introduzido por Rissanen em 1983. A apresentação foi em torno de sua demonstração. Para mais informações, segue o link da [palestra](http://www.semest.uff.br/images/meusarquivos/MatApr2017/MIC-08-AlineDuarte.pdf).
+
+## MIC-08 Modelagem Estocástica de Redes Neurais
+
+Seja um neurônio (cécula excitável) uma unidade cerebral, eles se comunicam através de sequências de pulsos elétricos - disparos ou potencias de ação:
+
+![](C:/Users/felipe.carvalho/Desktop/Apresentacao/neuromat2.png)
+
+Definiu-se *Potencial de Menbrana* como: **Diferença em voltagem entre o interior e o exterior da membrana celular** 
+
+Foi apresentado uma simulação *determinística* de um único neurônio e em seguida apresentou-se o modelo Integra-e-dispara **estocástico** para fazer a simulação **estocástica** de um único neurônio. Também foi comentado sobre memória variável.
+
+A partir dessas informações, definiu-se o modelo de um sistema de neurônios interagentes e depois inseriu-se o conceito de canais de vazamentos.
+
+Em seguida foi ilustrado o grafo de interação entre neurônios e por fim deixaram-se algumas questões em aberto, que podem ser conferidas na [apresentação](http://www.semest.uff.br/images/meusarquivos/MatApr2017/MIC-08-AlineDuarte.pdf), pois é uma área que têm muitos mistérios e muito ainda a ser explorado.
+
+<!-- ## PAL-7 Doenças sensíveis ao clima: o desafio de estabelecer uma correlação no Brasil -->
+<!-- Falou-se bastante de mudanças climáticas e foi comentado a alta procura por estatísticos nesta área pouco explorada. -->
+
+# Dia 26 de outubro de 2017
+
+## MIC-12 Análise de agrupamentos: algorítmos e aplicações
+
+### Introdução
+
+Neste [minicurso](http://www.semest.uff.br/images/meusarquivos/MatApr2017/MIC-12-JFMPessanha-1.pdf) apresentou-se algorítmos:
+
+  * Hierárquicos (métodos de encadeamento e Ward)
+  * Não hierárquicos (K Means) para análise de agrupamentos 
+
+Seguindo a abordagem de machine learning, também foi apresentado os algorítmos:
+
+  * mapa auto organizável (SOM)
+  * método fuzzy c-means
+  * DBSCAN (Density-based spatial clustering of applications with noise)
+  
+Etapas para análise de clusters, que são comuns em qualquer análise (KDD):
+
+  * Seleção dos objetos a serem agrupados
+  * Definir conjunto de atributos que caracterizam os objetos
+  * Medida de dissimilaridade
+  * Seleção de um algorítmo de agregação
+  * Definição do número de clusters
+  * Interpretação e validação dos clusters
+  
+Critérios para a seleção:
+
+  * Selecionar variáveis diferentes entre si
+  * Variáveis padronizadas (padronização mais comum é a Z-score)
+  
+No R a padronização z-score pode ser feita da seguinte maneira:
+
+```{r}
+#Conjuto de dados "iris" nativo do R para exemplo: 
+head(iris,n=5)
+
+#A função que realiza a transformação z-score no r é:
+z_score=scale(iris[,-5], center=T, scale=T)
+
+#Vejamos os 5 primeiros resutlados:
+head(z_score, n=5)
+```
+
+Diferenças entre os hierárquicos e os não hierárquicos:
+
+Métodos Hierárquicos são preferidos quando:
+
+  * Serão analisadas varias alternativas de agrupamento.
+  * O tamanho da amostra é moderado ( de 300 a 1000 objetos )
+  
+Métodos não-hierárquicos são preferidos quando:
+
+  * O número de grupos é conhecido.
+  * Presença dos outliers, desde que os métodos não-hierárquicos são
+menos influenciados por outliers.
+  * Há um grande nº de objetos a serem agrupados.
+
+### Método hierárquico de agrupamento
+
+É realizado em dois passos, o primeiro deles calcula-se a matriz de similaridade com o uso da função *dist()* (existem diversos tipos de distâncias que podem ser utilizadas aqui), o método utilizado será o de **Ward** (também poderíamos escolher o método da menor distância, maior distância ou a distância média).
+
+Vantagens:
+  
+  * Rápidos e exigem menos tempo de processamento.
+  * Apresentam resultados para diferentes níveis de agregação.
+
+Desvantagens:
+
+  * Alocação de um objeto em um cluster é irrevogável
+  * Impacto substancial dos outliers ( apesar do Ward ser o menos susceptível)
+  * Não apropriados para analisar uma amostra muito extensa, pois a medida que o tamanho da amostra aumenta, a necessidade de armazenamento das distâncias cresce drasticamente
+
+Para bases grandes é melhor não usar este método pois precisa da matriz de distâncias.
+
+Dentre os métodos, a menor distância pode ser ruim em muitas situações, pois coloca muitos objetos no mesmo cluster.
+
+Geralmente utiliza-se o dendograma para a visualização dos clusters.
+
+```{r}
+#Construindo a matriz de similaridade:
+matriz_similaridade = dist(iris[,-5],             #Conjunto de dados utilizados
+                           "euclidean"            #medida de distância utilizada
+                           )
+
+#Construindo o agrupamento hierárquico aglomerativo:
+agrupamento = hclust(matriz_similaridade,     #Matriz de similaridade calculada
+                     "ward.D"                 #Método de agrupamento
+                     )
+#Vejamos:
+plot(agrupamento, main="Agrupamento Hierárquico Aglomerativo")
+
+#Construindo representacao de grupos - geração de vetores:
+grupos = cutree(agrupamento,             #Variável calculada em hclust
+                3                        #Quantidade de grupos desejados
+                )
+
+#Construindo o dendograma:
+rect.hclust(agrupamento, k=3, border="red")
+
+```
+
+
+### Método não hierárquico de agrupamento K-means
+
+Esta é uma das mais populares abordagens de agrupamento de dados por partição. A partir de uma escolha inicial para os centróides, o algorítmo procede verificando quais exemplares são mais similares a quais centroides.
+
+Vantagens:
+  
+  * Tendem a maximizar a dispersão entre os centros de gravidade dos clusters (mantem os clusters bem separados)
+  * Simplicidade de cálculo, calcula somente as distâncias entre os objetos e os centros de gravidade dos clusters
+
+Desvantagens:
+
+  * Depende dos conjuntos de sementes iniciais, principalmente se a seleção das sementes é aleatória
+  * Não há garantias de um agrupamento ótimo dos objetos
+
+
+```{r}
+#Construindo o agrupamento por particionamento:
+c = kmeans(iris[,-5],          #Conjunto de dados utilizados
+                 2,            #Número de  grupos a ser descoberto
+                 iter.max=5    #Número máximo de iterações permitido no algorítmo
+                 )
+
+#Conferindo os grupos formados:
+c$cluster%>%
+  table()
+
+c$cluster%>%
+  table()%>%
+  barplot(main="Frequências dos clusters", names.arg=c("Cluster 1", "Cluster 2"))
+
+
+```
+
+
+A seguir, serão vistos os métodos que seguem a linha de machine learning
+ 
+### Método não hierárquico de agrupamento C-means (Fuzzy)
+
+Esta é uma abordagem de agrupamento de dados por partição, porém agora não é mais *boolean*, pode ser considerado qualquer valor entre 0 e 1, podendo pertencer a todos os grupos, porém com grau de pertinencia diferente. Indice cs (compacto e separado)
+
+
+
+```{r,eval=F}
+library(cmeans)
+#Construindo o agrupamento por particionamento:
+c = cmeans(iris[,-5],                 #Conjunto de dados utilizados
+                 2,                   #Quantos centros
+                 verbose=T,           #Faz o output durante o aprendizado
+                 dist="euclidean",    #distancia utilizada
+                 method="cmeans",     #cmeans fuzzy clustering method
+                 iter.max=5,          #Número máximo de iterações permitido no algorítmo
+                 m=2
+           )
+
+#Conferindo os grupos formados:
+print(c)
+
+```
+
+
+
+### DBSCAN (Density-based spatial clustering of applications with noise)
+
+Esta é uma estratégia de *agrupamento por densidade* , especialmente úteis par aa aplicação em conjunto de dados com um grande número de exemplares para descoberta de grupos de formatos arbitrários.
+
+Este algorítmo é caracterizado por guiar o processo de descoberta de grupos com base na densidade de exemplares B existentes numa região de tamanho T ao redor de de um exemplar A que já pertence a um grupo. Este algorítmo é um atrativo porque é capaz de lidar como ruído presente nos dados. Veja:
+
+```{r}
+library(fpc)
+
+grupos = dbscan(iris[,-5],  #Conjunto de dados utilizados
+                eps=1,      #Determina a vizinhança acessível de um exemplar
+                MinPts = 2  #É o parâmetro exigido na verificação da densidade de vizinhaça de um exemplar
+                )
+
+plot(grupos, iris[,-5])
+
+```
+
+### Mapas auto-organizáveis SOM (Self Organizing-maps de Kohonen, 1982)
+
+A arquitetura da rede neural artificial SOM foi proposta inspirada no funcionamento do cérebro.
+
+Em geral tem apenas duas camadas interconectadas por pesos sinápticos adaptáveis:
+
+  * camada de entrada com p neurônios
+  * camada de saída com q neurônios em uma grade bidimensional (mapa)
+  
+Veja:
+
+![](C:/Users/felipe.carvalho/Desktop/Apresentacao/som1.png)
+
+Durante o treinamento da rede neural os pesos das sinapses (w) são ajustados de maneira que os neurônios se especializam na detecção de um conjunto de entrada que se organizam topologicamente, fazendo com que os padrões detectados por um dado neurônio estejam relacionados a posição do neurônio na rede.
+
+Este tipo de abordagem permite análises visuais bem interessantes. 
+
+Nesta abordagem primeiramente escolhe-se o número de neurônios que serão utilizados, após apresentar os dados esses neurônios se organizam sozinhos "como se fossem uma análise de componentes principais".
+
+Vejamos seu funcionamento:
+
+```{r}
+library(kohonen)
+dados=scale(as.matrix(iris[,-5]))
+som_model= som(dados,                           #Conjunto de dados utilizado
+               grid=somgrid(5,5,"hexagonal"), #Dimensão do mapa e seu lattice (rectangular ou hexagonal)
+               rlen=1000,                        #Numero de vezes que o conjunto de dados completo eh apresentado
+               alpha=c(0.05, 0.01))             #Taxa de aprendizado inicial e final (0.05 e 0.01 é padrão)
+
+#Mostra a distância média ao vetor de código mais próximo durante o treinamento.
+plot(som_model,  type="changes")
+
+#Mostra o número de objetos mapeados para as unidades individuais. 
+#As unidades vazias são representadas em cinza.
+plot(som_model,  type="counts")
+
+#Mostra a soma das distâncias para todos os vizinhos imediatos. Esse tipo de visualização também é conhecido como um gráfico de U-matrix. As unidades perto de um limite de classe podem ser esperadas para ter distâncias médias mais elevadas para seus vizinhos. Apenas disponível para os mapas "som" e "supersom", por enquanto.
+plot(som_model, type="dist.neighbours")
+
+#Mostra os vetores da tabela de códigos.
+plot(som_model, type="codes")
+
+plot(som_model)
+```
+
+### Medidas de validação e estabilidade
+
+#### pseudo-F
+
+O número adequado de clusters (k) deve ser maximizar o pseudo-F:
+
+$$
+pseudo-F = \dfrac{  \dfrac{BSS}{k-1} } { \dfrac{WSS}{N-k}} =\dfrac{\textrm{Quadrado médio entre clusters}}{\textrm{Quadrado médio dentro dos clusters}}
+$$
+
+#### library(clvalid)
+
+Este pacote faz os calculos das medidas que avaliam se os clusters são compactos, bem separados e estáveis.
+
+Vejamos os tipos de medidas:
+
+**Medidas de validação**:
+
+1. conectividade: relativa ao grau de vizinhança entre objetos em um mesmo cluster, varia
+entre 0 e infinito e quanto menor melhor.
+2. silhueta: homogeneidade interna, assume valores entre -1 e 1 e quanto mais próximo de 1
+melhor.
+3. índice de Dunn: quantifica a separação entre os agrupamentos, assume valores entre 0 e 1 e
+quanto maior melhor.
+
+**Medidas de estabilidade**:
+
+1. APN - average proportion of non-overlap: proporção média de observações não
+classificadas no mesmo cluster nos casos com dados completos e incompletos. Assume valor
+no intervalo [0,1], próximos de 0 indicam agrupamentos consistentes.
+2. AD - average distance: distância média entre observações classificadas no mesmo cluster
+nos casos com dados completos e incompletos. Assume valores não negativos, sendo
+preferíveis valores próximos de zero.
+3. ADM - average distance between means: distância média entre os centroides quando as
+observações estão em um mesmo cluster. Assume valores não negativos, sendo preferíveis
+valores próximos de zero.
+4. FOM - figure of merit: medida do erro cometido ao usar os centroides como estimativas das
+observações na coluna removida. Assume valores não negativos, sendo preferíveis valores
+próximos de zero.
+
+
+```{r,eval=F}
+library(clValid)
+
+#Medidas de validação:
+valida=clValid(iris,1:4,clMethods=c("hierarchical","kmeans"),validation="internal")
+summary(valida)
+
+#Medidas de estabilidade;
+valida=clValid(empresas,2:6,clMethods=c("hierarchical","kmeans"),validation="stability")
+summary(valida)
+```
+
+#### Gráfico da silhueta:
+
+```{r}
+library(cluster)
+#Construindo a matriz de similaridade:
+matriz_similaridade = dist(iris[,-5],             #Conjunto de dados utilizados
+                           "euclidean"            #medida de distância utilizada
+                           )
+
+#Construindo o agrupamento hierárquico aglomerativo:
+agrupamento = hclust(matriz_similaridade,     #Matriz de similaridade calculada
+                     "ward.D"                 #Método de agrupamento
+                     )
+
+silhueta =silhouette(cutree(agrupamento,k=3),dist(iris[,-5]))
+plot(silhueta,main="")
+summary(silhueta)
+```
+
+### Conclusão
+
+Como podemos observar, a análise de agrupamentos é um método exploratório. É útil para organizar conjuntos de dados que contam com características semelhantes.
+
+É uma das principais técnincas da mineração de dados e já conta com grande variedade de algorítmos.

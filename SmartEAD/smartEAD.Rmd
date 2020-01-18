@@ -1,0 +1,540 @@
+---
+title: "Resumindo e Explorando um banco de dados"
+author: "Fellipe"
+date: "6 de maio de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=F)
+```
+
+# Introdução
+
+Este documento é baseado na vinheta do pacote [`SmartEAD`](https://cran.r-project.org/web/packages/SmartEDA) que está disponível no CRAN. Conta com a tradução para o portugues de alguns tópicos apresentados pelo autor e inclui algumas explicações da teoria estatística apresentada. As referências podem ser conferidas ao final do arquivo.
+
+<!-- # FOnte: https://cran.r-project.org/web/packages/SmartEDA/vignettes/Report_r1.html -->
+
+# SmartEDA
+
+O documento apresenta o pacote SmartEDA e como ele pode ajudá-lo a criar uma análise de dados exploratória.
+
+O SmartEDA inclui várias funções personalizadas para executar uma análise exploratória inicial em qualquer dado de entrada que descreva a estrutura e os relacionamentos presentes nos dados. A saída gerada pode ser obtida em formato resumido e gráfico. A forma ou gráficos gráficos também podem ser exportados como relatórios.
+
+O pacote SmartEDA ajuda você a construir uma boa base de compreensão de dados. As capacidades e funcionalidades estão listadas abaixo
+
+  1 - O pacote SmartEDA fará com que você seja capaz de aplicar diferentes tipos de EDA sem ter que lembre-se dos diferentes nomes dos pacotes R e escrever longos scripts R
+esforço manual para preparar o relatório da EDA
+
+  2 - Não há necessidade de categorizar as variáveis em caractere, numérico, fator etc. As funções do SmartEDA categorizam automaticamente todos os recursos no tipo de dados correto (caractere, numérico, fator etc.) com base nos dados de entrada.
+
+As funções ggplot2 são usadas para apresentação gráfica de dados
+
+As funções Rmarkdown e knitr foram usadas para criar relatórios HTML
+
+Para resumir, o pacote SmartEDA ajuda a obter a análise completa dos dados exploratórios apenas executando a função em vez de escrever um longo código r.
+
+## Carregando o pacote:
+
+```{r}
+#install.packages("SmartEDA")
+suppressMessages(library("SmartEDA"))
+```
+
+## Base de dados utilizada:
+
+
+
+```{r}
+suppressMessages(library(AER))
+data(Affairs)
+head(Affairs)
+```
+
+## Visão geral dos dados
+
+Entendendo as dimensões do conjunto de dados, nomes de variáveis, resumo geral ausente e tipos de dados de cada variável:
+
+```{r}
+# Visao geral dos dados - Type = 1
+ExpData(data=Affairs,type=1,DV=NULL)
+```
+
+```{r}
+# Estrutura dos dados - Type = 2
+ExpData(data=Affairs,type=2,DV=NULL)
+```
+
+# Análise exploratória de dados (EDA)
+
+Esta função mostra a saída EDA para 3 casos diferentes
+
+  * A variável de destino não está definida
+
+  * A variável alvo é contínua
+
+  * A variável de destino é categórica
+
+
+## Exemplo para o caso 1: a variável de destino não está definida
+
+### Resumo de variáveis numéricas:
+
+#### Resumo de todas as variáveis numéricas
+
+```{r}
+ExpNumStat (Affairs, by = "A", gp = NULL, MesofShape = 2, Outlier = TRUE, round = 2)
+```
+
+Medidas de forma para dar uma avaliação detalhada dos dados. Explica a quantidade e a direção do desvio. 
+
+  * Kurotsis explica o quão alto e afiado é o pico central. 
+  * Skewness não tem unidades: mas um número, como um escore z
+
+#### Distribuições de variáveis numéricas
+
+Representação gráfica de todos os recursos numéricos
+
+Gráfico de densidade (univariada)
+
+```{r}
+# Nota: Variável excluída (se o valor único da variável for menor ou igual a 10 [im = 10])
+
+ExpNumViz(Affairs,gp=NULL,Page=c(2,2),sample=8)
+```
+
+### Resumo de variáveis categóricas
+
+#### Frequência para todas as variáveis independentes categóricas
+
+```{r}
+ExpCTable(Affairs,Target=NULL,margin=1,clim=10,nlim=NULL,round=2,bin=NULL,per=T)
+# NA significa Not Applicable
+```
+
+#### Distribuições de variáveis categóricas
+
+Gráficos de barra para todas as variáveis categóricas
+
+
+```{r}
+ExpCatViz(Affairs,gp=NULL,fname=NULL,clim=10,margin=2,Page = c(2,1),sample=4)
+```
+
+## Exemplo para o caso 2: A variável de destino é contínua
+
+### Variável alvo
+
+#### Resumo da variável dependente contínua
+
+Nome da variável - Affairs
+
+Descrição da variável - tarifas da empresa de preços para assentos de carro em cada site
+
+```{r}
+summary(Affairs[,"affairs"])
+```
+
+#### Resumo das variáveis numéricas
+
+Estatísticas de resumo quando a variável dependente é contínua Preço.
+
+```{r}
+ExpNumStat(Affairs,by="A",gp="affairs",Qnt=seq(0,1,0.1),MesofShape=1,Outlier=TRUE,round=2)
+#Se a variável de destino for contínua, as estatísticas de resumo adicionarão a coluna de correlação (Correlação entre a variável de destino e todas as variáveis independentes)
+```
+
+####  Distribuições de variáveis numéricas
+
+Representação gráfica de todas as variáveis numéricas
+
+##### Gráfico de dispersão (bivariada)
+
+Gráfico de dispersão entre todas as variáveis numéricas e a variável de destino affairs. Esta trama ajuda a examinar quão bem uma variável alvo está correlacionada com variáveis dependentes.
+
+Variável dependente é affairs (contínuo).
+
+```{r}
+#Note: sample = 8 significa selecionado aleatoriamente 8 gráficos de dispersão
+#Nota: nlim = 4 significa que a variável numérica com valor exclusivo é maior que 4
+
+g=ExpNumViz(Affairs,gp="affairs",nlim=4,fname=NULL,col=NULL,Page=c(2,2),sample=8)
+```
+
+### Resumo de variáveis categóricas
+
+Resumo de variáveis categóricas
+
+frequência para todas as variáveis independentes categóricas por descretized Affairs
+
+```{r}
+##bin=4, descretized 4 categories based on quantiles
+Affairs$daffairs = ifelse(Affairs$affairs!=0,1,0)
+Affairs=Affairs[,-1]
+ExpCTable(Affairs,Target="daffairs",margin=1,clim=10,nlim=NULL,round=2,bin=NULL,per=F)
+```
+
+
+### Exemplo para o caso 3: a variável de destino é categórica
+
+Variável alvo
+
+#### Resumo da variável dependente categórica
+
+Nome da variável - affairs
+Descrição variável - Se teve affairs ou nao
+
+
+#### Resumo das variáveis numéricas
+Resumo de todas as variáveis numéricas
+
+```{r}
+ExpNumStat(Affairs,by="GA",gp="daffairs",Qnt=seq(0,1,0.1),MesofShape=2,Outlier=TRUE,round=2)
+```
+
+#### Distribuições de variáveis numéricas
+
+Box plots para todas as variáveis numéricas vs variável dependente categórica - Comparação bivariada apenas com categorias
+
+Boxplot para todos os atributos numéricos por cada categoria de affair
+
+```{r}
+ExpNumViz(Affairs,gp="daffairs",type=1,nlim=NULL,fname=NULL,col=c("pink","yellow","orange"),Page=c(2,2),sample=8)
+
+```
+
+
+#### Resumo das variáveis categóricas
+
+Tabulação cruzada com variável de destino
+
+Tabelas customizadas entre todas as variáveis independentes categóricas e a variável de destino affairs
+
+```{r}
+ExpCTable(Affairs,Target="daffairs",margin=1,clim=10,nlim=NULL,round=2,bin=NULL,per=F)
+```
+
+#### Valor da informação
+
+```{r}
+ExpCatStat(Affairs,Target="daffairs",result = "IV")
+```
+
+#### Teste Estatistico
+
+```{r}
+ExpCatStat(Affairs,Target="daffairs",result = "Stat")
+```
+
+#### Distribuições de variáveis categóricas
+
+Gráfico de barras empilhadas com barras verticais ou horizontais para todas as variáveis categóricas
+
+```{r}
+ExpCatViz(Affairs,gp="daffairs",fname=NULL,clim=10,col=NULL,margin=2,Page = c(2,1),sample=2)
+```
+
+
+# Ajuste do modelo linear
+
+```{r}
+source("functions.R")
+suppressMessages(library(ggplot2))
+suppressMessages(library(dplyr))
+suppressMessages(library(GGally))
+data("Affairs")
+#Correlaçoes cruzadas
+Affairs%>%
+  select(age:rating,affairs)%>%
+ggpairs(lower = list(continuous = my_fn,combo=wrap("facethist", binwidth=1), 
+                                       continuous=wrap(my_bin, binwidth=0.25)),aes(fill=affairs))+theme_bw()
+```
+
+
+```{r}
+ggcorr(Affairs,label = T,nbreaks = 5,label_round = 4)
+```
+
+# Modelo de regressão linear usando stepwiseAIC
+
+```{r}
+suppressMessages(library(caret))
+set.seed(123)
+index <- sample(1:2,nrow(Affairs),replace=T,prob=c(0.7,0.3))
+train = Affairs[index==1,]
+test = Affairs[index==2,]
+
+# Set up training control
+fitControl <- trainControl(method = "repeatedcv",   # 10fold cross validation
+                     number = 10, repeats=5,							# do 5 repititions of cv
+                     allowParallel = TRUE)
+
+# Use the expand.grid to specify the search space	
+# Note that the default search grid selects multiple values of each tuning parameter
+
+# Support Vector Machines
+set.seed(825)
+lmFit <- train(affairs ~ ., data = train,
+                method = "lmStepAIC", 
+                trControl = fitControl,
+                preProc = c("center", "scale"),trace=F)
+summary(lmFit)
+
+```
+
+Selecionando apenas as variaveis
+
+```{r}
+train=as.data.frame(train[,c(1,3,4,6,8,9)])
+test=as.data.frame(test[,c(1,3,4,6,8,9)])
+```
+
+#Diagnóstico do modelo
+
+## Avaliando residuos
+
+```{r}
+# calculate all residuals prior to display
+residuals <- lapply(train[2:ncol(train)], function(x) {
+  summary(lm(affairs ~ x, data = train))$residuals
+})
+
+# add a 'fake' column
+train$Residual <- seq_len(nrow(train))
+
+# calculate a consistent y range for all residuals
+y_range <- range(unlist(residuals))
+
+# plot the data
+ggduo(
+  train,
+  2:6, c(1,7),
+  types = list(continuous = lm_or_resid)
+)
+train=train%>%
+  select(-Residual)
+```
+
+## Inferencia dos parametros
+
+```{r}
+ggcoef(
+  lmFit$finalModel,                      #O modelo a ser conferido
+  exponentiate = TRUE,          #Para avaliar o modelo logístico
+  vline_color = "red",          #Reta em zero  
+  #vline_linetype =  "solid",   #Altera a linha de referência
+  errorbar_color = "blue",      #Cor da barra de erros
+  errorbar_height = .25,
+  shape = 18,                   #Altera o formato dos pontos centrais
+  #size=3,                      #Altera o tamanho do ponto
+  color="black",                #Altera a cor do ponto
+  mapping = aes(x = estimate, y = term, size = p.value))+
+  scale_size_continuous(trans = "reverse") #Essa linha faz com que inverta o tamanho 
+
+```
+
+## Residuos e medidas de influencia
+
+```{r}
+suppressMessages(library(ggfortify))
+
+autoplot(lmFit$finalModel, which = 1:6, data = train,
+         colour = 'affairs', label.size = 3,
+         ncol = 3)+theme_classic()
+```
+
+```{r}
+# look at model diagnostics
+ggnostic(lmFit$finalModel)+theme_bw()
+```
+
+# Machine Learning
+
+```{r}
+Affairs$affairs = ifelse(Affairs$affairs!=0,1,0)
+suppressMessages(library(FSelector))
+chi.squared(affairs~.,Affairs)
+```
+
+
+```{r}
+suppressMessages(library(caret))
+suppressMessages(library(doParallel))
+Affairs$affairs=as.factor(Affairs$affairs)
+levels(Affairs$affairs)=c("Nao","Sim")
+
+index <- sample(1:2,nrow(Affairs),replace=T,prob=c(0.7,0.3))
+train = Affairs[index==1,]
+test = Affairs[index==2,]
+```
+
+```{r}
+# Set up training control
+fitctrl <- trainControl(method = "repeatedcv",   # 10fold cross validation
+                     number = 5,							# do 5 repititions of cv
+                     # summaryFunction=twoClassSummary,	# Use AUC to pick the best model
+                     classProbs=TRUE,
+                     allowParallel = TRUE)
+
+# Use the expand.grid to specify the search space	
+# Note that the default search grid selects multiple values of each tuning parameter
+```
+
+```{r,echo=F}
+# Support Vector Machines
+set.seed(825)
+svmFit <- train(affairs ~ age+yearsmarried+religiousness+rating, data = test, 
+                method = "svmLinear", 
+                trControl = fitControl,
+                preProc = c("center", "scale"))
+svmFit  
+
+set.seed(825)
+nnetFit <- train(affairs ~ age+yearsmarried+religiousness+rating, data = test, 
+                method = "nnet", 
+                trControl = fitControl,
+                preProc = c("center", "scale"))
+nnetFit  
+
+set.seed(825)
+gbmFit <- train(affairs ~ age+yearsmarried+religiousness+rating, data = test, 
+               method = "gbm", 
+               trControl = fitControl,
+               preProc = c("center", "scale"))
+gbmFit 
+
+set.seed(825)
+glmFit <- train(affairs ~ age+yearsmarried+religiousness+rating, data = test,
+               method = "glm", 
+               trControl = fitControl,
+               preProc = c("center", "scale"))
+glmFit 
+
+set.seed(825)
+rfFit <- train(affairs ~ age+yearsmarried+religiousness+rating, data = test,
+               method = "rf", 
+               trControl = fitControl,
+               preProc = c("center", "scale"))
+rfFit 
+```
+
+```{r}
+svmFit
+nnetFit
+gbmFit
+summary(gbmFit$finalModel)
+glmFit
+summary(glmFit$finalModel)
+rfFit
+rfFit$finalModel
+summary(rfFit$finalModel)
+```
+
+
+```{r}
+#Given these models, can we make statistical statements about their performance differences? To do this, we first collect the resampling results using resamples.
+resamps <- resamples(list(SVM = svmFit,
+                          nnet = nnetFit,
+                          GBM = gbmFit,
+                          glmFit=glmFit,
+                          rfFit = rfFit))
+resamps
+summary(resamps)
+
+splom(resamps)
+
+theme1 <- trellis.par.get()
+theme1$plot.symbol$col = rgb(.2, .2, .2, .4)
+theme1$plot.symbol$pch = 16
+theme1$plot.line$col = rgb(1, 0, 0, .7)
+theme1$plot.line$lwd <- 2
+trellis.par.set(theme1)
+bwplot(resamps, layout = c(2, 1))
+
+trellis.par.set(caretTheme())
+dotplot(resamps, metric = "Accuracy")
+
+trellis.par.set(theme1)
+xyplot(resamps, what = "BlandAltman")
+
+confusionMatrix(test[,1],predict(svmFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating)))
+confusionMatrix(test[,1],predict(nnetFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating)))
+confusionMatrix( test[,1],predict(gbmFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating)))
+confusionMatrix( test[,1],predict(glmFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating)))
+confusionMatrix( test[,1],predict(rfFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating)))
+```
+
+```{r}
+dfSVM = as.data.frame(cbind(obs=test[,1],pred=predict(svmFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating))))-1
+dfNNET = as.data.frame(cbind(obs=test[,1],pred=predict(nnetFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating))))-1
+dfGBM = as.data.frame(cbind(obs=test[,1],pred=predict(gbmFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating))))-1
+dfGLM = as.data.frame(cbind(obs= test[,1],pred=predict(glmFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating))))-1
+dfRF = as.data.frame(cbind(obs= test[,1],pred=predict(rfFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating))))-1
+
+
+g1=plot_pred_type_distribution(dfSVM,0.5)
+g2=plot_pred_type_distribution(dfNNET,0.5)
+g3=plot_pred_type_distribution(dfGBM,0.5)
+g4=plot_pred_type_distribution(dfGLM,0.5)
+g5=plot_pred_type_distribution(dfRF,0.5)
+
+gridExtra::grid.arrange(g1,g2,g3,g4,g5,ncol=2)
+```
+
+<https://github.com/joyofdata/joyofdata-articles/blob/master/roc-auc/calculate_roc.R#L1>
+
+```{r}
+roc=calculate_roc(dfSVM,1,1,n=10)
+plot_roc(roc, 0.5, 1, 1)
+
+roc=calculate_roc(dfNNET,1,1,n=10)
+plot_roc(roc, 0.5, 1, 1)
+
+roc=calculate_roc(dfGBM,1,1,n=10)
+plot_roc(roc, 0.5, 1, 1)
+
+roc=calculate_roc(dfGLM,1,1,n=10)
+plot_roc(roc, 0.5, 1, 1)
+
+roc=calculate_roc(dfRF,1,1,n=10)
+plot_roc(roc, 0.5, 1, 1)
+
+```
+
+
+
+# Random Forest
+
+Plot Confusion matrix: <https://stats.stackexchange.com/questions/109079/confusion-between-caret-randomforest-predict-results-and-reported-model-perfor>
+
+```{r}
+data("Affairs")
+
+Affairs=Affairs%>%
+  select(-gender,-children)%>%
+  mutate(affairs=as.factor(affairs))%>%filter(affairs!=0)
+Affairs$affairs=factor(Affairs$affairs,levels=c(1,2,3,7,12))
+
+index <- sample(1:2,nrow(Affairs),replace=T,prob=c(0.7,0.3))
+train = Affairs[index==1,]
+test = Affairs[index==2,]
+
+set.seed(825)
+rfFit <- train(affairs ~ age+yearsmarried+religiousness+rating, data = train,
+               method = "rf", 
+               trControl = fitControl,
+               preProc = c("center", "scale"))
+rfFit 
+
+results=as.data.frame(cbind(obs=test[,1],pred=predict(rfFit,test[,-1]%>%select(age,yearsmarried,religiousness,rating))))
+results$ok=results$obs==results$pred
+
+ggplot(results, aes(x = pred, y = obs,colour=ok)) + 
+  geom_jitter(position = position_jitter(width = 0.25, height = 0.25))
+```
+
+```{r}
+roc=calculate_roc(results[,-3],1,1,n=100)
+plot_roc(roc, 0.5, 1, 1)
+```
+

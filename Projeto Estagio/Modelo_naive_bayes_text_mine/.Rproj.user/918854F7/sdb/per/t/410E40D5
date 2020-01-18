@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#Pacotes que serao utilizados:\nrequire(tm)     #Pacote de para text mining\nrequire(caret)  #Pacote para matriz de confusao\n\n#Leitura da base de dados:\ndados <- read_excel(\"monitoramento_redes_sociais_classificacao.xls\")  #Necessario estar no diretorio do banco de dados\nnames(dados) #Conferindo variaveis presentes no banco de dados\n\n#Variaveis que serao utilizadas:\nx=dados[,c(\"Reclamação\")]#Explicativa\ny=dados[,c(\"Classe\")]# Resposta\n\n#Criando o corpus para o tratamento das variaveis com pacote library(tm): \ncorpus <- Corpus(DataframeSource(x))\n\n#Para remmover as stopwords:\ncorpus = tm_map(corpus, removeWords, stopwords(\"portuguese\"))\n\n#Para remover excessos de espaços em branco:\ncorpus = tm_map(corpus, stripWhitespace)\n\n#Para remover pontuacao:\ncorpus = tm_map(corpus, removePunctuation)\n\n#Para remover numeros:\ncorpus = tm_map(corpus, removeNumbers)\n\n#Para colocar todas as letras como minusculas:\ncorpus = tm_map(corpus, content_transformer(tolower))\n\n#Criando a matrix de termos:\ncorpus_tf=TermDocumentMatrix(corpus, control = list(minWordLength=1,minDocFreq=1))\n\n# #Transformando em matrix, permitindo a manipulacao:\n# matrix=as.matrix(corpus_tf)\n\n#Caso tenha interesse em normalizar os dados:\ncorpus_tf_idf = weightTfIdf(corpus_tf,normalize = T)\n\n#Transformando em matrix, permitindo a manipulacao:\nmatrix=as.matrix(corpus_tf_idf)\n  \n#Criando a base de dados:\n\nbase=data.frame(y,t(matrix)) #Primeira coluna com a classe, a partir da segunda coluna são as variaveis\nbase[,1]=as.factor(base[,1]) #A classificacao deve ser um fator\n\n\n#Criando o modelo: ------------------------------------------------------\n\n#Separando em dados de treino e de teste:\nset.seed(43)\namostra=sample(1:2, 10, replace=T, prob=c(0.6,1-0.6));amostra\ntrain=base[amostra==1,]\ntest=base[amostra==2,]\n\n#Criando o modelo:\nmodelo=naiveBayes(train[,-1] ,train[,1])\n\n#Fazendo uma predicao:\nprevisao=predict(modelo, test[,-1], type=\"class\");previsao\nresposta=test[,1]\n\n#Funcao matriz de confusao do pacote caret\ncaret::confusionMatrix(previsao,resposta)\n",
+    "created" : 1510601027501.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2530662098",
+    "id" : "410E40D5",
+    "lastKnownWriteTime" : 1510602362,
+    "last_content_update" : 1510602362562,
+    "path" : "~/Analise de sentimentos DTPV/Modelo_naive_bayes/modelo naive bayes para text mining.R",
+    "project_path" : "modelo naive bayes para text mining.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
