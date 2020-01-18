@@ -1,0 +1,27 @@
+
+    model {
+    
+    # Priori
+    
+    B0 ~ dnorm(0,0.001)
+    B1 ~ dnorm(0,0.001)
+    B2 ~ dnorm(0,0.001)
+    B3 ~ dnorm(0,0.001)
+    B4 ~ dnorm(0,0.001)
+    B5 ~ dnorm(0,0.001)
+    B6 ~ dnorm(0,0.001)
+    B7 ~ dnorm(0,0.001)
+    B8 ~ dnorm(0,0.001)
+    B9 ~ dnorm(0,0.001)
+    B10 ~ dnorm(0,0.001)
+    B11 ~ dnorm(0,0.001)
+    B12 ~ dnorm(0,0.001)
+    
+    # Verossimilhança
+    for (i in 1:n) {
+    y[i] ~ dbern(p[i])
+    logit(p[i]) <- B0+B1*x1[i]+B2*x2[i]+B3*x3[i]+B4*x4[i]+B5*x5[i]+B6*x6[i]+B7*x7[i]+B8*x8[i]+B9*x9[i]+B10*x10[i]+B11*x11[i]+B12*x12[i]
+    }
+    
+    }
+    

@@ -1,0 +1,86 @@
+---
+title: "Métodos de seleção de um modelo"
+author: "Fellipe Gomes"
+date: "3 de outubro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(cvTools)
+```
+
+Estamos acostumados com critérios de seleção baseados no p-valor, porém existem diversos outros métodos que podem indicar qual o medelo que melhor explica os dados, dentre uma variedade de modelos que podemos produzir e possibilitar a escolha de qual o modelo mais adequado.
+
+#### AIC (Akaike Information Criterum):
+
+Seleciona o modelo que minimiza a variância dos resíduos e penaliza o excesso de parâmetros
+
+$$
+AIC_p = -2log(L_p)+2[(p+1) + 1]
+$$
+    
+No R temos:
+
+```{r, warning=F}
+
+modelo=lm(cars$speed~cars$dist)
+summary(modelo)                 #P.valores do teste t
+AIC(modelo)                     #AIC
+```
+
+#### BIC (Baysian Information Criterium)
+    
+É uma atualização do AIC, com os mesmos critérios:
+
+$$
+BIC_p = -2log(L_p)+[(p+1) + 1]log(n)
+$$
+
+No R temos:
+
+```{r, warning=F}
+modelo=lm(cars$speed~cars$dist)
+summary(modelo)                 #P.valores do teste t
+BIC(modelo)                     #BIC
+
+```
+
+#### Validação Cruzada
+
+```{r, warning=F}
+modelo=lm(cars$speed~cars$dist)
+summary(modelo) 
+cvLm(modelo)
+```
+
+#### Holdout
+
+Podemos utilizar duas abordagens:
+
+  * 70/30 (70% dos dados para treino e 30% para teste)
+  * 60/40 (60% dos dados para treino e 40% para teste)
+
+
+No R temos:
+
+```{r, warning=F}
+#Primeiramente:
+amostra = sample(1:2,length(cars[,1]), replace=T, prob=c(0.7,0.3));amostra
+
+#O conjunto de treino:
+treino=cars[amostra==1,]
+
+
+#O conjunto de teste:
+teste=cars[amostra==2,]
+
+modelo=lm(treino[,1]~treino[,2])
+summary(modelo)
+
+cbind(predict(modelo, data.frame(teste[,2])), teste[,1], predict(modelo, data.frame(teste[,2]))-teste[,1])
+
+plot(predict(modelo, data.frame(teste[,2]))-teste[,1])
+
+```
+

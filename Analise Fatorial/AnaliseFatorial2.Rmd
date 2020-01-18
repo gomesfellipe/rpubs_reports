@@ -1,0 +1,178 @@
+---
+title: "Análise Fatorial"
+author: "Fellipe Gomes"
+date: "3 de outubro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Análise Fatorial
+
+Busca fatores que explicam parte da variância total dos dados. Fatores são a soma das variâncias originais.
+
+Leitura dos dados:
+
+```{r}
+dados=read.csv2("Dados.csv")
+```
+
+
+## Objetivo:
+
+  * Procura identificar fatores que não são diretamente observáveis, com base em um conjunto de variáveis observáveis.
+
+  * Explicar a correlação ou covariância, entre um conjunto de variáveis, em termos de um número limitado de variáveis não-observáveis, chamadas de fatores ou variáveis latentes.
+  
+  * Em casos nos quais se tem um número grande de variáveis medidas e correlacionadas entre si, seria possível identificar-se um número menor de variáveis alternativas, não correlacionadas e que de algum modo sumarizassem as informações principais das variáveis originais.
+  
+  * A partir do momento em que os fatores são identificados, seus valores numéricos, chamados de escores, podem ser obtidos para cada elemento amostral. Conseqüentemente, estes escores podem ser utilizados em outras análises que envolvam outras técnicas estatísticas, como análise de regressão ou análise de variância, por exemplo.
+  
+## Etapas
+
+  * Computação da matriz de correlações para as variáveis originais;
+  * Extração de fatores
+  * Rotação dos fatores para tonar a interpretação mais fácil;
+  * Cálculo dos escores dos fatores
+  
+### Matriz de Correlação:
+
+  * Teste KMO (Kaiser-Meyer-Olkin) - avalia a adequação do tamanho amostra. Varia entre 0 e 1, onde: zero indica inadequado para análise fatorial, aceitável se for maior que 0.5, recomendado acima de 0.8.
+  
+  * Teste de Bartlett - a hipótese nula da matriz de correlação ser uma matriz identidade, isto é, avalia se os componentes fora da diagonal principal são zero. O resultado significativo indica que existem algumas relações entre as variáveis.
+
+No R:
+
+```{r}
+bartlett.test(dados)
+
+n=nrow(dados)
+p=ncol(dados)
+R=det(cor(dados))
+
+X2=-((n-1)-(2*p+5)/6)*log(R);
+X2
+
+v=p*(p-1)/2
+teste=qchisq(0.05,v)
+
+X2>teste  #O modelo é apropriado para a análise fatorial pelo teste de Bartlett de esfericidade
+
+kmo = function(x)
+{
+  x = subset(x, complete.cases(x))
+  r = cor(x)
+  r2 = r^2 
+  i = solve(r) 
+  d = diag(i) 
+  p2 = (-i/sqrt(outer(d, d)))^2 
+  diag(r2) <- diag(p2) <- 0 
+  KMO = sum(r2)/(sum(r2)+sum(p2))
+  MSA = colSums(r2)/(colSums(r2)+colSums(p2))
+  return(list(KMO=KMO, MSA=MSA))
+}
+
+kmo(dados)
+```
+
+
+#### Tipos de correlação:
+
+Nem sempre é possível utilizar a correlação de pearson, porém, existem diversas outras maneiras de se saber qual a correlação dos dados. Podemos utilizar correlações como de Spearman, Policórica, etc..
+  
+### Extração de fatores via componentes principais
+
+  * Determinado o número de fatores necessários para representar os dados
+  
+  * Também é determinado o método que será utilizado, o mais utilizado é a análise de componentes principais
+
+#### Estimação do número de fatores m
+
+  * Estimação do número de fatores m
+
+  * Para a estimação de m, bastará extrair-se os autovalores da matriz de correlação amostral.
+
+  * Observa-se quais autovalores são os mais importantes em termos de grandeza numérica.
+  
+  * os autovalores refletem a importância do fator se o número de fatores for igual ao número de variáveis então a soma dos autovetores é igual a soma das variâncias (pois cada variância será igual a 1).
+  
+  * Portanto a razão $ \lambda / 2 var $ indica proporção da variabilidade total explicada pelo fator
+  
+**Critérios:**
+
+  1. A análise da proporção da variância total relacionada com cada autovalor ($\lambda_i$). Permanecem aqueles autovalores que maiores proporções da variância total e, portanto, o valor de m será igual ao número de autovalores retidos;
+  
+  2. A comparação do valor numérico de ($\lambda_i$) com o valor 1. O valor de m será igual ao número de autovalores maiores ou iguais a 1.
+  
+  3. Observação do gráfico scree-plot, que dispõe os valores de ($\lambda_i$) ordenados em ordem decrescente. Por este critério, procura-se no gráfico um "ponto de salto", que estaria representando um decréscimo de importância em relação à variância total. O valor de m seria então igual ao número de autovalores anteriores ao "ponto de salto".
+
+  
+#### Análise de componentes Principais:
+
+  * Fatores são obtidos atravéz da decomposição espectral da matriz de correlações, resultado em cargas fatoriais que indicam o quanto cada variável está associada a cada fator e os autovalores associados a cada um dos fatores envolvidos
+
+  * São formadas combinações lineares das variáveis observadas.
+
+  * O primeiro componente principal consiste na combinação que responde pela maior quantidade de variância na amostra.
+
+  * O segundo componente responde pela segunda maior variância na amostra e não é correlacionado com o primeiro componente.
+
+  * Sucessivos componentes explicam progressivamente menores porções de variância total da amostra e todos são não correlacionados uns aos outros.
+  
+
+```{r}
+#Componentes principais:
+acpcor=prcomp(dados, scale = TRUE)
+summary(acpcor)
+```
+
+Observação do gráfico scree-plot:
+
+```{r}
+plot(1:ncol(dados), acpcor$sdev^2, type = "b", xlab = "Componente",
+     ylab = "Variância", pch = 20, cex.axis = 1.3, cex.lab = 1.3)
+```
+
+#### Rotação 
+
+  * Algumas variáveis são mais correlacionadas com alguns fatores do que outras.
+  
+  * Em alguns casos, a interpretação dos fatores originais pode não ser tarefa muito fácil devido à aparição de coeficientes de grandeza numérica similar, e não desprezível, em vários fatores diferentes.
+
+  * O propósito da rotação é obter uma estrutura simples.
+
+  * Em uma estrutura simples, cada fator tem carga alta somente para algumas variáveis, tornando mais fácil a sua identificação.
+  
+  * Tipos: Varimax, Quartimax, Equamax
+  
+  
+Aplicando a Varimax:
+
+```{r}
+k <- 6 #6 fatores selecionados
+carfat = acpcor$rotation[, 1:k] %*% diag(acpcor$sdev[1:k])
+carfatr = varimax(carfat)
+```
+  
+#### Comunalidade
+  * Indices atribuídos a variável original que expressam em % o quanto da variabilidade de cada variável é explicada pelo modelo
+
+  * Designa-se por comunalidade ($h^{2}_i$)a proporção da variância de cada variável explicada pelos fatores comuns.
+
+  * As comunalidades variam entre 0 e 1, sendo 0 quando os fatores comuns não explicam nenhuma variância da variável e 1 quando explicam toda a sua variância.
+
+  * Quando o valor das comunalidades é menor que 0,6 deve-se
+pensar em: aumentar a amostra, eliminar as variáveis.
+
+### Interpretar o modelo
+
+  * Feito pelas cargas fatoriais que são os parâmetros do modelo
+  
+  * Fatores expressam as covariâncias entre cada fator e as variáveis originais
+  
+  * Varimax ajuda a interpretar o modelo
+  
+  * Rotações ortogonais (para dependente) ; Rotações oblícuas (para independentes)
+  

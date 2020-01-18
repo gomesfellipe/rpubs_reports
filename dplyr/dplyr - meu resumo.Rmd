@@ -1,0 +1,432 @@
+---
+title: "dplyr"
+author: "Fellipe Gomes"
+date: "8 de outubro de 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Conteúdo:
+
+  * Seleção de linhas e colunas;
+  * Criação e transformação de variáveis;
+  * Formatos de variáveis e conversões (data, numérico, texto, etc.);
+  * Ordenamento;
+  * Merge básico;
+  * Estatísticas agregadas;
+  * Subsetting com comandos tradicionais do R.
+
+---
+
+#  Leitura da base de dados
+
+Inicialmente vamos fazer a importação da base suicidios.
+
+```{r}
+base=read.csv("suicidios.csv", header=T, sep=";")
+head(base)
+```
+
+Tratando as variáveis qualitativas:
+
+```{r}
+#Transformando a variável suicidio por arma de fogo em um factor
+base$suicidio_paf = factor(base$suicidio_paf, labels=c("Não","Sim"))
+
+#Transformando a variável Microrregiao em um factor
+base$Microrregiao = factor(base$Microrregiao)
+
+#Transformando a variável Escolaridade em um ordered
+base$escolaridade = ordered(base$escolaridade,levels=c(1,2,3,4,5,6), labels=c("Analfabeto","1 a 3","4 a 7","8 a 11", "12 ou mais","Desconhecido"))
+
+#Transformando a variável estado civil em um factor
+base$estado_civil = factor(base$estado_civil, labels=c("Solteiro","União estavel","Casado","Viuvo", "Divorciado","Desconhecido"))
+
+#Transformando a variável raca em um factor
+base$raca = factor(base$raca, labels=c("Branco","Negro","Amarelo","Pardo", "Indigena","Desconhecido"))
+
+#Transformando a variável sexo em um factor
+base$sexo = factor(base$sexo, labels=c("Masculino","Feminino"))
+
+#Transformando a variável id_legal em um factor
+base$id_legal = factor(base$id_legal, labels=c("Não","Sim"))
+
+#Transformando a variável trab_armado em um factor
+base$trab_armado = factor(base$trab_armado, labels=c("Não","Sim"))
+```
+
+Vejamos um resumo dos dados:
+
+```{r}
+summary(base)
+```
+
+# Pacote dplyr
+
+O pacote dplyr é um dos pacotes mais poderosos e populares do R, desenvolvido por Hadley Wickham.
+
+O dplyr é um poderoso pacote R para manipular, limpar e resumir dados não estruturados. Em suma, faz a exploração de dados e manipulação de dados de forma fácil e rápida no R.
+
+```{r}
+# Carregando o pacote dplyr
+library(dplyr)
+```
+
+## Selecionando n linhas aleatorias: função sample_n(.)
+
+```{r}
+# Selecionando 3 linhas aleatoriamente
+sample_n(base,3)
+```
+
+## Removendo linhas duplicadas: função distinct(.)
+
+### Baseado em todas as variáveis
+
+```{r}
+#Calculando a dimensao da base
+dim(base)
+
+# excluindo linhas iguais
+base2=distinct(base)
+dim(base2)
+```
+
+### Baseado em uma variável
+
+```{r}
+# excluindo linhas que possuem Microrregiao igual
+base3=distinct(base,Microrregiao)
+dim(base3)
+```
+### Baseado em mais de uma variável
+
+```{r}
+# excluindo linhas que possuem idade e escolatridade iguais
+base4=distinct(base,idade, escolaridade)
+dim(base4)
+```
+
+## Selecionando colunas (variáveis): função select(.)
+
+```{r}
+# Selecionando a variavel idade e  todas as variáveis de trabalho armado até raca na base
+base5=select(base,idade, trab_armado:raca)
+head(base5)
+
+# Selecionando todas as variaveis com exceção de idade e idade legal
+base6=select(base,-c(idade,id_legal))
+head(base6)
+
+# Selecionando todas as variaveis cujo nome inicia com e
+base7=select(base,starts_with("e")) #também ends_with() e contains().
+head(base7)
+
+```
+#### Podem ser úteis também ends_with() e contains().
+
+## Reordenando as as colunas das variáveis: função select(.)
+
+```{r}
+# reorganiza o data frame, iniciando com a variável Microrregiao e depois as demais
+base8=select(base,Microrregiao,everything())
+head(base8)
+```
+## Renomeando variáveis: função rename(.)
+
+```{r}
+# Renomeando a variável Microrregiao para micro
+base9 = rename(base8,Micro = Microrregiao)
+head(base9)
+```
+
+## Selecionando um subconjunto de linhas que satisfazem uma ou mais condições: função filter(.)
+
+```{r}
+# Selecionando somente os indivíduos do sexo masculino
+base9 = filter(base, sexo == "Masculino")
+head(base9)
+
+# Selecionando somente os indivíduos do sexo masculino e branco
+base10 = filter(base, sexo == "Masculino" & raca == "Branco")
+head(base10)
+
+
+# Selecionando somente os indivíduos com escolaridade de 1 a 3 anos e 4 a 7 anos
+base11 = filter(base, escolaridade %in% c("1 a 3","4 a 7"))
+head(base11)
+
+# Selecionando indivíduos que ou são homens solteiros ou são mulheres casadas
+base12 = filter(base, (estado_civil=="Solteiro" & sexo =="Masculino") | (estado_civil=="Casado" & sexo =="Feminino") )
+head(base12)
+```
+
+## Ordene seus data frames: função arrange(.)
+
+```{r}
+# Ordenando os dados pela variável idade de forma crescente
+base13 = arrange(base, idade )
+head(base13)
+
+# Ordenando os dados pela variável idade e escolaridade
+base14 = arrange(base, idade ,escolaridade)
+head(base14)
+
+# Ordenando os dados pela variável idade de forma decrescente
+base15 = arrange(base, desc(idade) )
+head(base15)
+```
+
+## Crie uma nova variável: função mutate(.) e transmute(.)
+
+```{r}
+# Criando a variável Idade ao quadrado
+base16 = mutate(base, idade2 = idade**2 )
+head(base16)
+
+# Criando a variável UF e a variável Grandes regiões
+base17 = mutate(base, UF = substring(Microrregiao,1,2), Grandes.regioes = substring(UF,1,1) )
+head(base17)
+
+# Se você quiser somente manter as variáveis criadas
+base18 = transmute(base,UF = substring(Microrregiao,1,2), Grandes.regioes = substring(UF,1,1) )
+head(base18)
+```
+
+## Resumindo variáveis: função summarize(.)
+
+```{r}
+# Calculando a media e a mediana da variável idade
+summarise(base,  media.idade = mean(idade), mediana.idade = median(idade))
+```
+
+## Resumindo variáveis por grupo: função group_by(.) e summarize(.)
+
+```{r}
+# Calculando a media da variável idade para as combinações entre sexo, escolaridade e estado civil e a frequencia de indivíduos em cada combinação
+grupo = group_by(base, sexo, escolaridade, estado_civil)
+resultado=summarise(grupo,  media.idade = mean(idade),frequencia=n())
+resultado
+
+# Calculando a media da variável idade para as combinações entre idade legal, escolaridade e estado civil e a frequencia de indivíduos em cada combinação
+grupo = group_by(base, id_legal, escolaridade, estado_civil)
+resultado=summarise(grupo,  media.idade = mean(idade),frequencia=n())
+resultado
+```
+
+## Operador pipe: %>%
+
+Realiza múltiplas ações sem guardar os passos intermediários.
+
+```{r}
+# Selecionando as variáveis idade e idade legal
+base18 = base %>% select(idade,id_legal)
+head(base18)
+
+base19 = base %>% select(-estado_civil) %>% filter(sexo=="Masculino") %>% group_by(raca,escolaridade) %>% summarise(maximo=max(idade),media=mean(idade))
+head(base19 , n=10)
+```
+
+## Aplicando funções em linhas
+
+```{r}
+base20 = base16 %>%
+  rowwise() %>% mutate(Max= max(idade:idade2)) %>%
+  select(idade,idade2,Max)
+head(base20)
+```
+
+---
+
+# Leitura dos dados 
+
+Vamos fazer a importação da base Populacao por micro sexo e idade (base.pop), da base Municipios_2010 (base.mun) e da base Num de obitos 2010 (base.obitos).
+
+```{r}
+base.pop=read.csv("Populacao por micro sexo e idade.txt", header=TRUE, sep="")
+
+library(readxl)
+base.mun <- read_excel("~/Estatistica Aplicada II/Dplyr/Municipios_2010.xlsx")
+
+base.obitos <- read_excel("~/Estatistica Aplicada II/Dplyr/Municipios_2010.xlsx")
+```
+
+Vejamos o banco de dados:
+
+```{r}
+#Cabeçalho da base com as informações sobre a população
+head(base.pop)
+dim(base.pop)
+
+#Cabeçalho da base com as informações sobre os municípios
+head(base.mun)
+dim(base.mun)
+
+#Cabeçalho da base com as informações sobre os números de óbitos
+head(base.obitos)
+dim(base.obitos)
+```
+
+## Combinando duas bases de dados
+
+O pacote dplyr possui um conjunto de funções que nos auxiliam a combinar dos data frames do nosso interesse.
+
+```{r}
+#Criando a base b1
+b1 <- data.frame(ID = c(1010, 2010, 3010, 4010, 5010),
+                  W = c('a', 'b', 'c', 'd', 'e'),
+                  X = c(1, 1, 0, 0, 1),
+                  Y=rnorm(5))
+
+b1
+```
+
+```{r}
+#Criando a base b2
+
+b2 <- data.frame(ID = c(1010, 7010, 3010, 6010, 8010),
+                  A = c('z', 'b', 'k', 'd', 'l'),
+                  B = c(1, 2, 3, 0, 4),
+                  C =rnorm(5))
+
+b2
+```
+
+```{r}
+#Criando a base b3
+
+b3 <- data.frame(Identificacao = c(1010, 5010,2541),
+                  Z =rnorm(3),
+                  W =c("Rio","São Paulo","Niteroi"))
+
+b3
+```
+
+### inner_join
+
+```{r}
+# Função inner_join: Combina as duas bases incluindo todas as variáveis de ambas as bases e todas as linhas comuns as duas bases
+merge1 = inner_join(b1,b2,by="ID")
+merge1
+
+merge2 = inner_join(b1,b3,by=c("ID"="Identificacao"))
+merge2
+```
+
+### left_join
+
+```{r}
+# Função left_join: Combina as duas bases incluindo todas as variáveis de ambas as bases e todas as linhas da base a esquerda
+merge3 = left_join(b1,b2,by="ID")
+merge3
+```
+
+### right_join
+
+```{r}
+# Função right_join: Combina as duas bases incluindo todas as variáveis de ambas as bases e todas as linhas da base a direita
+merge4 = right_join(b1,b2,by="ID")
+merge4
+```
+
+### full_join
+
+```{r}
+# Função full_join: Combina as duas bases incluindo todas as variáveis de ambas as bases e todas as linhas de ambas as bases
+merge5 = full_join(b1,b2,by="ID")
+merge5
+```
+
+### semi_join
+
+```{r}
+# Função semi_join: Combina as duas bases incluindo as variáveis da basea a esquerda e todas as linhas comuns as duas bases
+merge6 = semi_join(b1,b2,by="ID")
+merge6
+```
+
+### anti_join
+
+```{r}
+# Função anti_join: Combina as duas bases incluindo as variáveis da base a esquerda e todas as linhas que não são comuns as duas bases
+merge7 = anti_join(b1,b2,by="ID")
+merge7
+```
+
+## Combinando dados verticalmente
+
+```{r}
+#Criando a base d1
+d1 <- data.frame(ID = c(1010, 2010, 3010, 4010, 5010),
+                  W = c('a', 'b', 'a', 'b', 'e'),
+                  X = c(1, 1, 0, 0, 1),
+                  Y=c(3,6,3,5,7))
+
+d1
+
+#Criando a base d2
+
+d2 <- data.frame(ID = c(1010, 2010, 5010),
+                  W = c('a', 'b', 'e'),
+                  X = c(1, 1, 1),
+                  Y=c(3,6,7))
+
+d2
+
+#Criando a base d3
+
+d3 <- data.frame(ID = c(3210, 2011, 1017),
+                  W = c('b', 'e', "a"),
+                  X = c(1,0,1),
+                  Y=c(3,5,4))
+
+d3
+
+#Criando a base d4
+
+d4 <- data.frame(ID = c(3210, 2011, 1017),
+                  idade = c(10,20,32),
+                  Sexo = c(1,0,1))
+
+d3
+```
+
+### Juntando por linhas comuns com intersect
+
+```{r}
+#Criando uma base com as linhas comus as duas bases
+intersect(d1,d2)
+```
+
+### Juntando todas as linhas com union
+
+```{r}
+#Criando uma base unindo todas as linhas das duas bases
+union(d1,d3)
+```
+
+### Base com linhas distintas nas duas bases com setdiff
+
+```{r}
+#Criando uma base com as linhas distintas nas duas bases
+setdiff(d1,d3)
+```
+
+### Empilhando duas bases uma sobre a outra com rbind
+
+```{r}
+#Empilhando duas bases, uma em cima da outra
+rbind(d1,d3)
+```
+
+### Empilhando duas bases lado a lado com cbind
+
+```{r}
+#Empilhando duas bases, uma ao lado da outra
+cbind(d3,d4)
+```
+

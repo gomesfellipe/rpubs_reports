@@ -1,0 +1,109 @@
+os links sao os seguintes para os downloads:> 
+
+* baixar software 'virtual box' 
+   :::> https://www.virtualbox.org/wiki/Downloads
+   
+
+* baixar ELASTIC stack    :::> https://www.elastic.co/downloads/elasticsearch   
+
+
+   ELASTICSEARCH => https://www.elastic.co/guide/en/elasticsearch/reference/current/zip-windows.html
+		https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.3.zip
+
+   KIBANA => https://www.elastic.co/downloads/kibana
+		https://artifacts.elastic.co/downloads/kibana/kibana-5.6.3-windows-x86.zip
+
+   LOGSTASH => https://www.elastic.co/downloads/logstash
+		https://artifacts.elastic.co/downloads/logstash/logstash-5.6.3.zip
+        https://www.elastic.co/guide/en/logstash/current/config-examples.html
+
+
+#####################
+### parte pratica ###
+#####################
+
+SHINY
+  :::> http://www.shinyapps.io/
+  install.packages('rsconnect')
+  rsconnect::setAccountInfo(name='cerceau', token='CE597237EE030814F74C59DEF8F393E4', secret='fisWfUngcgYWmwceMg3oeYtBFWbwbcvezrTYIHr6')
+
+  ## Shinyapps.io - Getting started
+  http://shiny.rstudio.com/articles/shinyapps.html
+  
+  ## rode o codigo
+  library(rsconnect)
+  rsconnect::deployApp('path/to/your/app')
+  
+RADIANT - Business analytics using R and Shiny (http://vnijs.github.io/radiant/)
+    # 1. instale o pacote no R
+		install.packages("radiant", repos = "https://radiant-rstats.github.io/minicran/", type = 'binary')
+	# 2. digite o seguinte comando no terminal do R: radiant::radiant()
+   
+ELASTICSEARCH
+    # 1. descompacte na pasta
+	# 2. entre em /bin
+	# 3. digite: elasticsearch
+	entre em: http://localhost:9200
+		
+KIBANA
+    # 1. descompacte na pasta
+	# 2. entre em /bin
+	# 3. digite: kibana
+	entre em: http://localhost:5601
+	
+LOGSTACH
+   :::> https://www.elastic.co/guide/en/logstash/current/codec-plugins.html
+   
+   ## crie arquivo "SEMEST2017.config"
+   input {twitter {
+	consumer_key => "SUACHAVEAQUI"
+	consumer_secret => "SUACHAVEAQUI"
+	oauth_token => "SUACHAVEAQUI"
+	oauth_token_secret => "SUACHAVEAQUI"
+	keywords => [ "PALAVRA"]
+	full_tweet => false}}
+
+   filter { }
+
+   output {stdout {codec => dots}
+	elasticsearch {
+		hosts => "localhost"
+		index => "twitter"
+			document_type => "tweets"}}
+			
+	## meu exemplo: 'socialteam' (@socialteamBR)
+	# ATENCAO: tem que ter celular registrado no twitter
+	# 1. logar em https://dev.twitter.com/apps
+	# 2. registre 'create an application'
+	#     name     : testeELASTIC
+	#	  descricao: http://testeELASTIC.com
+	#     URL      : http://testeELASTIC.com
+	# 3. abra 'consumer key > manage keys and access tokens'
+	# 3.2 copie os codigos 'consumer_key', consumer_secret' para o arquivo 'SEMEST2017.config'
+	# 3.1 clique em 'Token Actions > Create my access token'
+	# 3.3 copie os codigos 'oauth_token', oauth_token_secret' para o arquivo 'SEMEST2017.config'
+	# 4. defina as palavras a serem procuradas (cada uma delas 'entre aspas' e com separação por vírgulas)
+	# 5. defina se prefere manter somente poucas informações (mantendo: 'full_tweet => false') ou substituir por recebimento de mais dados (full_tweet => true}})
+	# 6. defina nomes do 'index' e 'document_type' para armazenar os dados (escolha o nome que desejar) 
+	# 7. salve o arquivo 'SEMEST2017.config' na pasta onde esta o '/logstash-5.6.3/bin'
+	# 8. entre o diretorio '/logstash-5.6.3/bin' e inicie a captura dos dados do TWITTER
+	#         digite: logstash -f SEMEST2017.config
+	# 9. entre no 'kibana' e acrescente o index 'twitter*'
+	# 10. entre em 'discoverer', depois em 'visualize'
+	# ps. caso pretenda filtrar os 'tweets', inclua conteúdo no filtro ('filter'); sugiro ver no google: 'logstash grok'
+	
+   input {twitter {
+	consumer_key => "iA9ABUpafVxba6XT6ei5TucfP"
+	consumer_secret => "nwy6AMCVERo4b89iPUKw2IB7aGub0J1ukstbWMxWGNz0jXr2pJ"
+	oauth_token => "395608721-TjNGkhFVnbNi2SvNROnVk9pmyWj4HWKNcDGpy6af"
+	oauth_token_secret => "fW9rdHu0hrWJNMXHPs5id4fvQXWR7WvLui4sjaRPcWOMp"
+	keywords => [ "FIFA"]
+	full_tweet => false}}
+
+   filter { }
+
+   output {stdout {codec => dots}
+	elasticsearch {
+		hosts => "localhost"
+		index => "twitter"
+			document_type => "tweets"}}

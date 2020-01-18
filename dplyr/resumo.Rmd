@@ -1,0 +1,149 @@
+---
+title: "dplyr"
+author: "Fellipe Gomes"
+date: "4 de outubro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+setwd("~/Estatistica Aplicada II/dplyr/Material aula")
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+base=read.csv("suicidios.csv", header=T, sep=";")
+```
+
+## Leitura dos dados e tratamento dos dados::
+
+```{r}
+#Leitura da base de dados suicidios.csv
+#Transformando a variável suicidio por arma de fogo em um factor
+base$suicidio_paf = factor(base$suicidio_paf, labels=c("Não","Sim"))
+
+#Transformando a variável Microrregiao em um factor
+base$Microrregiao = factor(base$Microrregiao)
+
+#Transformando a variável Escolaridade em um ordered
+base$escolaridade = ordered(base$escolaridade,levels=c(1,2,3,4,5,6), labels=c("Analfabeto","1 a 3","4 a 7","8 a 11", "12 ou mais","Desconhecido"))
+
+#Transformando a variável estado civil em um factor
+base$estado_civil = factor(base$estado_civil, labels=c("Solteiro","União estavel","Casado","Viuvo", "Divorciado","Desconhecido"))
+
+#Transformando a variável raca em um factor
+base$raca = factor(base$raca, labels=c("Branco","Negro","Amarelo","Pardo", "Indigena","Desconhecido"))
+
+#Transformando a variável sexo em um factor
+base$sexo = factor(base$sexo, labels=c("Masculino","Feminino"))
+
+#Transformando a variável id_legal em um factor
+base$id_legal = factor(base$id_legal, labels=c("Não","Sim"))
+
+#Transformando a variável trab_armado em um factor
+base$trab_armado = factor(base$trab_armado, labels=c("Não","Sim"))
+
+```
+
+Vejamos algumas estatísticas descritivas dos dados:
+
+```{r, echo=F}
+summary(base)
+```
+
+## Comandos
+
+<!-- ### Selecionando n linhas aleatorias: função sample_n(.) -->
+
+<!-- # ```{r} -->
+<!-- # # Selecionando 3 linhas aleatoriamente -->
+<!-- # sample_n(base,3) -->
+<!-- # ``` -->
+
+### Removendo linhas duplicadas: função distinct(.)
+
+#### Baseado em todas as variáveis
+
+```{r}
+#Calculando a dimensao da base
+dim(base)
+
+# excluindo linhas iguais
+base2=distinct(base)
+dim(base2)
+```
+
+#### Baseado em uma variável
+
+```{r}
+# excluindo linhas que possuem Microrregiao igual
+base3=distinct(base,Microrregiao)
+dim(base3)
+```
+
+#### Baseado em mais de uma variável
+
+```{r}
+# excluindo linhas que possuem idade e escolatridade iguais
+base4=distinct(base,idade, escolaridade)
+dim(base4)
+```
+
+### Selecionando colunas (variáveis): função select(.)
+
+```{r}
+# Selecionando a variavel idade e  todas as variáveis de trabalho armado até raca na base
+base5=select(base,idade, trab_armado:raca)
+head(base5)
+
+# Selecionando todas as variaveis com exceção de idade e idade legal
+base6=select(base,-c(idade,id_legal))
+head(base6)
+
+# Selecionando todas as variaveis cujo nome inicia com e
+base7=select(base,starts_with("e")) #Ou  ends_with() e contains()
+head(base7)
+
+```
+
+#### Reordenando as colunas de variáveis: função select(.)
+
+```{r}
+# reorganiza o data frame, iniciando com a variável Microrregiao e depois as demais
+base8=select(base,Microrregiao,everything())
+head(base8)
+```
+
+### Renomeando variáveis: função rename(.)
+
+```{r}
+# Renomeando a variável Microrregiao para micro
+base9 = rename(base8,Micro = Microrregiao)
+head(base9)
+```
+
+### Selecionando um subconjunto de linhas que satisfazem uma ou mais condições: função filter(.)
+
+```{r}
+# Selecionando somente os indivíduos do sexo masculino
+base9 = filter(base, sexo == "Masculino")
+head(base9)
+
+# Selecionando somente os indivíduos do sexo masculino e branco
+base10 = filter(base, sexo == "Masculino" & raca == "Branco")
+head(base10)
+
+# Selecionando somente os indivíduos com escolaridade de 1 a 3 anos e 4 a 7 anos
+base11 = filter(base, escolaridade %in% c("1 a 3","4 a 7"))
+head(base11)
+
+# Selecionando indivíduos que ou são homens solteiros ou são mulheres casadas
+base12 = filter(base, (estado_civil=="Solteiro" & sexo =="Masculino") | (estado_civil=="Casado" & sexo =="Feminino") )
+head(base12)
+```
+
+
+
+
+
+
+
+
+
