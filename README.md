@@ -1,2 +1,3 @@
-# rpubs_reports
-http://rpubs.com/gomes555
+# Arquivos utilizados para publicações no RPubs
+
+Link: http://rpubs.com/gomes555
